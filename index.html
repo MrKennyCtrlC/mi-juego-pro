@@ -350,13 +350,15 @@
     ===================================================== */
     #main-menu {
       position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
       z-index: 100;
-      background: radial-gradient(ellipse at center, rgba(8,4,18,0.97) 0%, rgba(2,1,6,0.99) 100%);
+      background: radial-gradient(ellipse at center, rgba(8, 4, 18, 0.97) 0%, rgba(2, 1, 6, 0.99) 100%);
       backdrop-filter: blur(8px);
       overflow-y: auto;
     }
@@ -389,13 +391,18 @@
     }
 
     @keyframes logoGlow {
-      from { filter: drop-shadow(0 0 12px rgba(0,240,255,0.4)); }
-      to   { filter: drop-shadow(0 0 28px rgba(168,85,247,0.7)); }
+      from {
+        filter: drop-shadow(0 0 12px rgba(0, 240, 255, 0.4));
+      }
+
+      to {
+        filter: drop-shadow(0 0 28px rgba(168, 85, 247, 0.7));
+      }
     }
 
     .game-logo .subtitle {
       font-size: 0.9rem;
-      color: rgba(255,255,255,0.4);
+      color: rgba(255, 255, 255, 0.4);
       letter-spacing: 3px;
       text-transform: uppercase;
       margin-top: 6px;
@@ -411,7 +418,7 @@
       border-radius: 14px;
       cursor: pointer;
       letter-spacing: 2px;
-      box-shadow: 0 0 30px rgba(0,240,255,0.5), 0 8px 24px rgba(0,0,0,0.4);
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.5), 0 8px 24px rgba(0, 0, 0, 0.4);
       transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       font-family: 'Outfit', sans-serif;
       width: 100%;
@@ -420,23 +427,23 @@
 
     #start-game-btn:hover {
       transform: scale(1.06) translateY(-2px);
-      box-shadow: 0 0 50px rgba(0,240,255,0.8), 0 12px 30px rgba(0,0,0,0.5);
+      box-shadow: 0 0 50px rgba(0, 240, 255, 0.8), 0 12px 30px rgba(0, 0, 0, 0.5);
     }
 
     .menu-panel {
       width: 100%;
-      background: rgba(15,10,28,0.7);
-      border: 1px solid rgba(255,255,255,0.07);
+      background: rgba(15, 10, 28, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.07);
       border-radius: 18px;
       padding: 24px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 8px 32px rgba(0,0,0,0.4);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 8px 32px rgba(0, 0, 0, 0.4);
     }
 
     .menu-panel h3 {
       font-size: 0.75rem;
       font-weight: 800;
       letter-spacing: 3px;
-      color: rgba(0,240,255,0.7);
+      color: rgba(0, 240, 255, 0.7);
       text-transform: uppercase;
       margin: 0 0 16px 0;
       display: flex;
@@ -448,14 +455,14 @@
       content: '';
       flex: 1;
       height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(0,240,255,0.3));
+      background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.3));
     }
 
     .menu-panel h3::after {
       content: '';
       flex: 1;
       height: 1px;
-      background: linear-gradient(90deg, rgba(0,240,255,0.3), transparent);
+      background: linear-gradient(90deg, rgba(0, 240, 255, 0.3), transparent);
     }
 
     /* Volume Sliders */
@@ -466,12 +473,14 @@
       margin-bottom: 14px;
     }
 
-    .volume-row:last-child { margin-bottom: 0; }
+    .volume-row:last-child {
+      margin-bottom: 0;
+    }
 
     .volume-label {
       font-size: 0.8rem;
       font-weight: 600;
-      color: rgba(255,255,255,0.55);
+      color: rgba(255, 255, 255, 0.55);
       min-width: 80px;
     }
 
@@ -481,7 +490,7 @@
       appearance: none;
       height: 4px;
       border-radius: 2px;
-      background: rgba(255,255,255,0.1);
+      background: rgba(255, 255, 255, 0.1);
       outline: none;
       cursor: pointer;
     }
@@ -493,7 +502,7 @@
       height: 16px;
       border-radius: 50%;
       background: linear-gradient(135deg, #00f0ff, #a855f7);
-      box-shadow: 0 0 8px rgba(0,240,255,0.6);
+      box-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
       cursor: pointer;
       transition: transform 0.15s ease;
     }
@@ -508,14 +517,14 @@
       border: none;
       border-radius: 50%;
       background: linear-gradient(135deg, #00f0ff, #a855f7);
-      box-shadow: 0 0 8px rgba(0,240,255,0.6);
+      box-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
       cursor: pointer;
     }
 
     .volume-value {
       font-size: 0.8rem;
       font-weight: 700;
-      color: rgba(0,240,255,0.8);
+      color: rgba(0, 240, 255, 0.8);
       min-width: 34px;
       text-align: right;
     }
@@ -528,11 +537,11 @@
     }
 
     .stats-table thead tr {
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     .stats-table th {
-      color: rgba(255,255,255,0.35);
+      color: rgba(255, 255, 255, 0.35);
       font-weight: 600;
       padding: 0 8px 10px 8px;
       text-align: left;
@@ -543,8 +552,8 @@
 
     .stats-table td {
       padding: 8px 8px;
-      color: rgba(255,255,255,0.75);
-      border-bottom: 1px solid rgba(255,255,255,0.04);
+      color: rgba(255, 255, 255, 0.75);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
     }
 
     .stats-table tr:last-child td {
@@ -553,12 +562,12 @@
 
     .stats-table td:first-child {
       font-weight: 700;
-      color: rgba(0,240,255,0.8);
+      color: rgba(0, 240, 255, 0.8);
     }
 
     .stats-empty {
       text-align: center;
-      color: rgba(255,255,255,0.2);
+      color: rgba(255, 255, 255, 0.2);
       font-size: 0.82rem;
       padding: 12px 0;
     }
@@ -568,13 +577,15 @@
     ===================================================== */
     #pause-menu {
       position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
       z-index: 90;
-      background: rgba(4,2,10,0.82);
+      background: rgba(4, 2, 10, 0.82);
       backdrop-filter: blur(12px);
     }
 
@@ -586,10 +597,10 @@
       width: 90%;
       max-width: 420px;
       padding: 36px;
-      background: rgba(14,10,26,0.9);
-      border: 1px solid rgba(168,85,247,0.2);
+      background: rgba(14, 10, 26, 0.9);
+      border: 1px solid rgba(168, 85, 247, 0.2);
       border-radius: 24px;
-      box-shadow: 0 0 60px rgba(168,85,247,0.15), 0 20px 60px rgba(0,0,0,0.6);
+      box-shadow: 0 0 60px rgba(168, 85, 247, 0.15), 0 20px 60px rgba(0, 0, 0, 0.6);
     }
 
     .pause-title {
@@ -606,7 +617,7 @@
 
     .pause-subtitle {
       font-size: 0.8rem;
-      color: rgba(255,255,255,0.3);
+      color: rgba(255, 255, 255, 0.3);
       letter-spacing: 2px;
       text-transform: uppercase;
       margin-top: -12px;
@@ -628,23 +639,23 @@
     #resume-btn {
       background: linear-gradient(90deg, #00f0ff, #00b0ff);
       color: #060508;
-      box-shadow: 0 0 20px rgba(0,240,255,0.4);
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
     }
 
     #resume-btn:hover {
       transform: scale(1.04);
-      box-shadow: 0 0 35px rgba(0,240,255,0.7);
+      box-shadow: 0 0 35px rgba(0, 240, 255, 0.7);
     }
 
     #quit-to-menu-btn {
-      background: rgba(255,255,255,0.06);
-      color: rgba(255,255,255,0.6);
-      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255, 255, 255, 0.06);
+      color: rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     #quit-to-menu-btn:hover {
-      background: rgba(255,0,85,0.15);
-      border-color: rgba(255,0,85,0.4);
+      background: rgba(255, 0, 85, 0.15);
+      border-color: rgba(255, 0, 85, 0.4);
       color: #ff5577;
       transform: scale(1.02);
     }
@@ -657,9 +668,9 @@
       width: 38px;
       height: 38px;
       border-radius: 10px;
-      background: rgba(15,10,28,0.75);
-      border: 1px solid rgba(168,85,247,0.35);
-      color: rgba(255,255,255,0.7);
+      background: rgba(15, 10, 28, 0.75);
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      color: rgba(255, 255, 255, 0.7);
       font-size: 1.1rem;
       cursor: pointer;
       z-index: 50;
@@ -668,14 +679,14 @@
       justify-content: center;
       backdrop-filter: blur(6px);
       transition: all 0.2s ease;
-      box-shadow: 0 0 12px rgba(168,85,247,0.2);
+      box-shadow: 0 0 12px rgba(168, 85, 247, 0.2);
     }
 
     #float-pause-btn:hover {
-      background: rgba(168,85,247,0.25);
-      border-color: rgba(168,85,247,0.7);
+      background: rgba(168, 85, 247, 0.25);
+      border-color: rgba(168, 85, 247, 0.7);
       color: #fff;
-      box-shadow: 0 0 20px rgba(168,85,247,0.5);
+      box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
     }
   </style>
 </head>
@@ -815,10 +826,64 @@
   </div>
 
   <script>
+    // ==========================================
+    // SISTEMA DE AUDIO LOCAL (SOUND MANAGER)
+    // ==========================================
+    const SoundManager = {
+      currentBGM: null,
+      tracks: {
+        gameplay: 'SoundManager/GameplaySoundtrack.ogg',
+        boss: 'SoundManager/BossBattleSoundtrack.ogg'
+      },
+      masterVolume: 1.0,
+      musicVolume: 0.5,
+
+      playBGM(type) {
+        const targetUrl = this.tracks[type];
+        if (!targetUrl) return;
+        // Si ya está sonando la misma canción, no la reinicies
+        if (this.currentBGM && this.currentBGM.src.includes(targetUrl)) return;
+
+        // Si había otra sonando, deténla
+        if (this.currentBGM) this.currentBGM.pause();
+
+        this.currentBGM = new Audio(targetUrl);
+        this.currentBGM.loop = true; // Activa bucle infinito automático
+        this.updateVolume();
+
+        // Intenta reproducir (el navegador requiere que el usuario haya hecho clic antes)
+        this.currentBGM.play().catch(e => console.log("Audio esperando interacción del jugador"));
+      },
+
+      updateVolume() {
+        if (this.currentBGM) {
+          // El volumen real es la combinación de ambos sliders
+          this.currentBGM.volume = this.masterVolume * this.musicVolume;
+        }
+      },
+
+      setMusicVolume(value) {
+        this.musicVolume = value;
+        this.updateVolume();
+      },
+
+      setMasterVolume(value) {
+        this.masterVolume = value;
+        this.updateVolume();
+      },
+
+      stopBGM() {
+        if (this.currentBGM) {
+          this.currentBGM.pause();
+          this.currentBGM.currentTime = 0; // Reinicia la canción al segundo cero
+        }
+      }
+    };
     // =====================================================
     // FSM: Estado global del flujo de pantallas
     // =====================================================
     let isMainMenuActive = true;
+    SoundManager.playBGM('gameplay');
     let isGamePaused = false;
 
     const AudioEngine = {
@@ -849,14 +914,14 @@
         if (this.masterGain) this.masterGain.gain.setValueAtTime(v, this.ctx.currentTime);
       },
       // Stub: slider de música existente no tendrá efecto sin BGM activo
-      setMusicVolume(v) {},
+      setMusicVolume(v) { },
       setSfxVolume(v) {
         if (this.sfxGain) this.sfxGain.gain.setValueAtTime(v, this.ctx.currentTime);
       },
 
       // Stubs para evitar errores en los call sites existentes
-      playTrack(track) {},
-      stopBGM() {},
+      playTrack(track) { },
+      stopBGM() { },
 
       playSFX(type) {
         if (!this.ctx || !this.sfxGain) return;
@@ -1576,8 +1641,8 @@
       active: false,
       x: 0,
       y: 0,
-      hp: 5000,
-      maxHp: 5000,
+      hp: 25000,
+      maxHp: 2500,
       radius: 35,             // Radio de colisión intermedio para sus 59px de ancho
       speed: 65,              // Velocidad en píxeles por segundo (corregido de 1.8)
       lastAttackTime: 0,
@@ -1590,6 +1655,7 @@
 
     let bossSpawned = false;
     let isBossFightActive = false;
+
     function spawnGem(x, y, enemyMaxHp) {
       for (let i = 0; i < maxGems; i++) {
         const g = gems[i];
@@ -1839,13 +1905,14 @@
       const timeStr = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
       let history = [];
-      try { history = JSON.parse(localStorage.getItem('neon_survivors_history') || '[]'); } catch(e) {}
+      try { history = JSON.parse(localStorage.getItem('neon_survivors_history') || '[]'); } catch (e) { }
       history.unshift({ time: timeStr, level: player.level, kills });
       if (history.length > 8) history = history.slice(0, 8); // Guardar solo las últimas 8
       localStorage.setItem('neon_survivors_history', JSON.stringify(history));
     }
 
     function gameOver() {
+      SoundManager.stopBGM();
       saveGameHistory();
       gameState = 'gameOver';
       document.getElementById('game-over-screen').classList.remove('hidden');
@@ -2052,7 +2119,7 @@
               if (boss.hp <= 0) {
                 boss.active = false;
                 isBossFightActive = false;
-                AudioEngine.playTrack("normal");
+                SoundManager.playBGM('gameplay');
                 kills += 100; // Bono de bajas
                 spawnGem(boss.x, boss.y, 500); // Gema de mucha XP
                 showToast("🏆 ¡JEFE DESTRUIDO! 🏆");
@@ -2176,7 +2243,7 @@
       if (gameTime >= 300 && !bossSpawned) {
         bossSpawned = true;
         isBossFightActive = true;
-        AudioEngine.playTrack("boss");
+        SoundManager.playBGM('boss');
 
         // Despawn masivo de enemigos comunes
         for (let i = 0; i < maxEnemies; i++) {
@@ -2486,7 +2553,7 @@
     function renderStatsTable() {
       const container = document.getElementById('stats-container');
       let history = [];
-      try { history = JSON.parse(localStorage.getItem('neon_survivors_history') || '[]'); } catch(e) {}
+      try { history = JSON.parse(localStorage.getItem('neon_survivors_history') || '[]'); } catch (e) { }
 
       if (history.length === 0) {
         container.innerHTML = '<p class="stats-empty">Aún no tienes partidas registradas.<br>¡Comienza tu primera batalla!</p>';
@@ -2517,24 +2584,47 @@
       `;
     }
 
-    function syncPauseSliders() {
-      const mVal = document.getElementById('master-vol').value;
-      const muVal = document.getElementById('music-vol').value;
-      const sVal = document.getElementById('sfx-vol').value;
-      document.getElementById('p-master-vol').value = mVal;
-      document.getElementById('p-master-vol-val').textContent = mVal + '%';
-      document.getElementById('p-music-vol').value = muVal;
-      document.getElementById('p-music-vol-val').textContent = muVal + '%';
-      document.getElementById('p-sfx-vol').value = sVal;
-      document.getElementById('p-sfx-vol-val').textContent = sVal + '%';
-    }
+    // ── Sliders del Pause Menu (Sincronización y Audio Directo) ──
+    document.getElementById('p-master-vol').addEventListener('input', function () {
+      document.getElementById('p-master-vol-val').textContent = this.value + '%';
+      applyVolumeFromSlider('p-master-vol', 'master');
+      document.getElementById('master-vol').value = this.value;
+      document.getElementById('master-vol-val').textContent = this.value + '%';
+
+      // CORRECCIÓN DIRECTA: Convertimos el valor (0-100) a decimal (0.0 - 1.0) y lo aplicamos
+      if (typeof SoundManager !== 'undefined') {
+        SoundManager.setMasterVolume(parseFloat(this.value) / 100);
+      }
+    });
+
+    document.getElementById('p-music-vol').addEventListener('input', function () {
+      document.getElementById('p-music-vol-val').textContent = this.value + '%';
+      applyVolumeFromSlider('p-music-vol', 'music');
+      document.getElementById('music-vol').value = this.value;
+      document.getElementById('music-vol-val').textContent = this.value + '%';
+
+      // CORRECCIÓN DIRECTA: Convertimos el valor (0-100) a decimal (0.0 - 1.0) y lo aplicamos
+      if (typeof SoundManager !== 'undefined') {
+        SoundManager.setMusicVolume(parseFloat(this.value) / 100);
+      }
+    });
 
     function applyVolumeFromSlider(sliderId, type) {
       const slider = document.getElementById(sliderId);
-      const val = slider.value / 100;
-      if (type === 'master') AudioEngine.setMasterVolume(val);
-      else if (type === 'music') AudioEngine.setMusicVolume(val);
-      else if (type === 'sfx') AudioEngine.setSfxVolume(val);
+      if (!slider) return; // Seguridad por si el slider no existe en el HTML
+
+      const val = parseFloat(slider.value) / 100;
+
+      if (type === 'master') {
+        SoundManager.setMasterVolume(val);
+      } else if (type === 'music') {
+        SoundManager.setMusicVolume(val);
+      } else if (type === 'sfx') {
+        // Mantiene el sonido de las balas usando el AudioEngine viejo
+        if (typeof AudioEngine !== 'undefined' && AudioEngine.setSfxVolume) {
+          AudioEngine.setSfxVolume(val);
+        }
+      }
     }
 
     // =====================================================
@@ -2558,23 +2648,29 @@
     });
 
     // Botón SALIR AL MENÚ PRINCIPAL
-    document.getElementById('quit-to-menu-btn').addEventListener('click', goToMainMenu);
+    document.getElementById('quit-to-menu-btn').addEventListener('click', () => {
+      // INYECCIÓN DE AUDIO: Silencia la música inmediatamente al salir
+      SoundManager.stopBGM();
+
+      // ... aquí abajo sigue el resto de tu código para volver al menú ...
+      goToMainMenu();
+    });
 
     // ── Sliders del Main Menu ──
-    document.getElementById('master-vol').addEventListener('input', function() {
+    document.getElementById('master-vol').addEventListener('input', function () {
       document.getElementById('master-vol-val').textContent = this.value + '%';
       applyVolumeFromSlider('master-vol', 'master');
       // Sincronizar pause menu
       document.getElementById('p-master-vol').value = this.value;
       document.getElementById('p-master-vol-val').textContent = this.value + '%';
     });
-    document.getElementById('music-vol').addEventListener('input', function() {
+    document.getElementById('music-vol').addEventListener('input', function () {
       document.getElementById('music-vol-val').textContent = this.value + '%';
       applyVolumeFromSlider('music-vol', 'music');
       document.getElementById('p-music-vol').value = this.value;
       document.getElementById('p-music-vol-val').textContent = this.value + '%';
     });
-    document.getElementById('sfx-vol').addEventListener('input', function() {
+    document.getElementById('sfx-vol').addEventListener('input', function () {
       document.getElementById('sfx-vol-val').textContent = this.value + '%';
       applyVolumeFromSlider('sfx-vol', 'sfx');
       document.getElementById('p-sfx-vol').value = this.value;
@@ -2582,19 +2678,19 @@
     });
 
     // ── Sliders del Pause Menu (sincronizan back a main menu) ──
-    document.getElementById('p-master-vol').addEventListener('input', function() {
+    document.getElementById('p-master-vol').addEventListener('input', function () {
       document.getElementById('p-master-vol-val').textContent = this.value + '%';
       applyVolumeFromSlider('p-master-vol', 'master');
       document.getElementById('master-vol').value = this.value;
       document.getElementById('master-vol-val').textContent = this.value + '%';
     });
-    document.getElementById('p-music-vol').addEventListener('input', function() {
+    document.getElementById('p-music-vol').addEventListener('input', function () {
       document.getElementById('p-music-vol-val').textContent = this.value + '%';
       applyVolumeFromSlider('p-music-vol', 'music');
       document.getElementById('music-vol').value = this.value;
       document.getElementById('music-vol-val').textContent = this.value + '%';
     });
-    document.getElementById('p-sfx-vol').addEventListener('input', function() {
+    document.getElementById('p-sfx-vol').addEventListener('input', function () {
       document.getElementById('p-sfx-vol-val').textContent = this.value + '%';
       applyVolumeFromSlider('p-sfx-vol', 'sfx');
       document.getElementById('sfx-vol').value = this.value;
