@@ -2626,7 +2626,21 @@
         }
       }
     }
+    function syncPauseSliders() {
+      // Esta función evita que el botón de pausa tire error.
+      // Sincroniza los valores visuales de los sliders si existen
+      const masterVol = document.getElementById('master-vol');
+      const pMasterVol = document.getElementById('p-master-vol');
+      if (masterVol && pMasterVol) pMasterVol.value = masterVol.value;
 
+      const musicVol = document.getElementById('music-vol');
+      const pMusicVol = document.getElementById('p-music-vol');
+      if (musicVol && pMusicVol) pMusicVol.value = musicVol.value;
+
+      const sfxVol = document.getElementById('sfx-vol');
+      const pSfxVol = document.getElementById('p-sfx-vol');
+      if (sfxVol && pSfxVol) pSfxVol.value = sfxVol.value;
+    }
     // =====================================================
     // ENLACE DE EVENTOS UI
     // =====================================================
