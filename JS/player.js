@@ -179,7 +179,7 @@ function updatePlayer(dt) {
 
     // --- CONTROL DE INVENCIBILIDAD (MODO DIOS) ---
     // Cambia "true" a "false" si quieres desactivar la invencibilidad (modo normal)
-    const isInvincible = true;
+    const isInvincible = (typeof DEV !== 'undefined') ? DEV.invincible : false;
     if (isInvincible) {
         player.hp = player.maxHp;
     } else if (player.regenRate > 0) {
@@ -246,21 +246,39 @@ function findNearestEnemy() {
 }
 
 function shootWeapons() {
-    const nearest = findNearestEnemy();
-    if (!nearest) return;
+    let target = null;
 
-    const baseAngle = Math.atan2(nearest.y - player.y, nearest.x - player.x);
+    if (typeof isBossFightActive !== 'undefined' && isBossFightActive && boss.active) {
+        // Buscar esbirro a menos de 80px (peligro inmediato)
+        let dangerMinion = null;
+        let closestDist = 80;
+        for (let i = 0; i < maxEnemies; i++) {
+            const e = enemies[i];
+            if (!e.active) continue;
+            const dist = Math.hypot(e.x - player.x, e.y - player.y);
+            if (dist < closestDist) {
+                closestDist = dist;
+                dangerMinion = e;
+            }
+        }
+        // Esbirro en zona de peligro → defensa, si no → boss
+        target = dangerMinion ?? boss;
+    } else {
+        target = findNearestEnemy();
+    }
+
+    if (!target) return;
+
+    const baseAngle = Math.atan2(target.y - player.y, target.x - player.x);
     const count = player.projectileCount;
-
-    // Separación en abanico (15 grados aprox. en radianes)
     const spread = 0.25;
     const startAngle = baseAngle - (count - 1) * spread / 2;
 
     for (let i = 0; i < count; i++) {
         const angle = startAngle + i * spread;
-        const tx = player.x + Math.cos(angle) * 100;
-        const ty = player.y + Math.sin(angle) * 100;
-        spawnProjectile(player.x, player.y, tx, ty);
+        spawnProjectile(player.x, player.y,
+            player.x + Math.cos(angle) * 100,
+            player.y + Math.sin(angle) * 100);
     }
 }
 
