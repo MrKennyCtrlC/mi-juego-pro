@@ -33,7 +33,8 @@ const player = {
         vampirismo: 0
     },
     evasionChance: 0,
-    maxProjectilePierce: 1
+    maxProjectilePierce: 1,
+    supremeMagnetTriggered: false
 };
 
 // --- CONTROLES DE ENTRADA (INPUT GESTION) ---
@@ -407,6 +408,32 @@ function gainXp(amount) {
         player.xp -= player.maxXp;
         player.level++;
         player.maxXp = Math.floor(player.maxXp * 1.35) + 6;
+
+        // RECOMPENSA MID-GAME: IMÁN SUPREMO AL NIVEL 15
+        if (player.level >= 15 && !player.supremeMagnetTriggered) {
+            player.supremeMagnetTriggered = true;
+            if (typeof showToast === 'function') {
+                showToast("🧲 ¡RECOMPENSA DE NIVEL 15: IMÁN SUPREMO! 🧲");
+            }
+
+            // Activar onda visual expansiva del Imán Supremo
+            if (typeof magnetEffect !== 'undefined') {
+                magnetEffect.active = true;
+                magnetEffect.radius = 0;
+                magnetEffect.timer = 0;
+            }
+
+            // Ejecuta la atracción masiva inmediata de todas las gemas activas en el mapa
+            if (typeof gems !== 'undefined') {
+                gems.forEach(gem => {
+                    if (gem.active) {
+                        gem.magnetizing = true; // Activa la física de imán nativa del juego para cada gema
+                        gem.magnetSpeed = (gem.magnetSpeed || 160) * 2; // Aumentar velocidad de atracción
+                    }
+                });
+            }
+        }
+
         levelUp();
     }
 }

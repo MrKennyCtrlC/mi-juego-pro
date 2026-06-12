@@ -524,6 +524,9 @@
       for (let i = 0; i < maxProjectiles; i++) projectiles[i].active = false;
       for (let i = 0; i < maxGems; i++) gems[i].active = false;
       for (let i = 0; i < maxParticles; i++) particles[i].active = false;
+      if (typeof pickups !== 'undefined') {
+        for (let i = 0; i < maxPickups; i++) pickups[i].active = false;
+      }
     }
 
     function startGame() {
@@ -548,6 +551,7 @@
       player.xp = 0;
       player.maxXp = 10;
       player.level = 1;
+      player.supremeMagnetTriggered = false;
       player.damageMultiplier = 1.0;
       player.attackCooldownMultiplier = 1.0;
       player.speedMultiplier = 1.0;
@@ -618,6 +622,9 @@
     let currentFps = 60;
     let _lastDt = 0; // Almacena el dt del frame actual para el sistema de popups
 
+    // Global variable for supreme magnet wave effect
+    let magnetEffect = { active: false, radius: 0, timer: 0 };
+
     function update(dt) {
       if (typeof DEV !== 'undefined') dt *= DEV.speedMult;
       gameTime += dt;
@@ -646,6 +653,7 @@
       updateBoss(dt);
       checkProjectileCollisions(dt);
       updateGems(dt);
+      if (typeof updatePickups === 'function') updatePickups(dt);
       updateParticles(dt);
       checkPlayerDamage(dt);
 
@@ -702,6 +710,57 @@
             ctx.drawImage(sprImg, spr.sx, spr.sy, spr.sw, spr.sh,
               screenX - drawW * 0.5, screenY - drawH * 0.5, drawW, drawH);
           }
+        }
+      }
+
+      // --- Pickups (Corazones, etc) ---
+      if (typeof pickups !== 'undefined') {
+        for (let i = 0; i < maxPickups; i++) {
+          const p = pickups[i];
+          if (p.active) {
+            const screenX = (p.x - camera.x) * scaleX + halfW;
+            const screenY = halfH - (p.y - camera.y) * scaleY;
+
+            let spr = null;
+            if (p.type === 'heart') spr = SPRITE.HEART_DROP;
+
+            if (spr) {
+              const sprImg = getSpriteImg(spr);
+              if (sprImg.complete && sprImg.naturalWidth > 0) {
+                const drawW = 16 * scaleX; // Escala visual del corazón
+                const drawH = 16 * scaleX * (spr.sh / spr.sw);
+                ctx.drawImage(sprImg, spr.sx, spr.sy, spr.sw, spr.sh,
+                  screenX - drawW * 0.5, screenY - drawH * 0.5, drawW, drawH);
+              }
+            }
+          }
+        }
+      }
+
+      // --- Efecto Imán Supremo ---
+      if (magnetEffect && magnetEffect.active) {
+        magnetEffect.timer += _lastDt;
+        const maxTime = 1.0; // Duración de la onda expansiva: 1 segundo
+        if (magnetEffect.timer < maxTime) {
+          magnetEffect.radius += 2000 * _lastDt; // Velocidad de expansión
+
+          const screenX = (player.x - camera.x) * scaleX + halfW;
+          const screenY = halfH - (player.y - camera.y) * scaleY;
+
+          ctx.save();
+          const alpha = 1.0 - Math.pow(magnetEffect.timer / maxTime, 2); // Fade out
+          ctx.globalAlpha = alpha;
+          ctx.beginPath();
+          ctx.arc(screenX, screenY, magnetEffect.radius * scaleX, 0, Math.PI * 2);
+          ctx.strokeStyle = '#00e5ff'; // Color celeste neón
+          ctx.lineWidth = 12 * scaleX;
+          ctx.stroke();
+
+          ctx.fillStyle = 'rgba(0, 229, 255, 0.15)';
+          ctx.fill();
+          ctx.restore();
+        } else {
+          magnetEffect.active = false;
         }
       }
 

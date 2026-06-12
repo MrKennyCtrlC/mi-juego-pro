@@ -206,6 +206,7 @@ h1 {
   margin: 0 0 10px 0;
   background: linear-gradient(135deg, #00f0ff 0%, #ff007f 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: 0 0 30px rgba(0, 240, 255, 0.2);
   letter-spacing: 2px;
@@ -214,6 +215,7 @@ h1 {
 .dead-text {
   background: linear-gradient(135deg, #ff0055 0%, #7b002c 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: 0 0 30px rgba(255, 0, 85, 0.3);
 }
@@ -850,4 +852,4 @@ h1 {
 .upgrade-card--relic:hover .relic-pixel-icon {
   filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.9));
   transform: scale(1.1) rotate(3deg);
-}
+}

@@ -478,10 +478,32 @@ function checkProjectileCollisions(dt) {
                     if (boss.hp <= 0) {
                         boss.active = false;
                         isBossFightActive = false;
-                        SoundManager.playBGM('gameplay');
-                        kills += 100; // Bono de bajas
-                        spawnGem(boss.x, boss.y, 500); // Gema de mucha XP
-                        showToast("🏆 ¡JEFE DESTRUIDO! 🏆");
+                        if (typeof SoundManager !== 'undefined') SoundManager.playBGM('gameplay');
+                        if (typeof kills !== 'undefined') kills += 100; // Bono de bajas
+                        
+                        // Drop original de XP
+                        if (typeof spawnGem === 'function') spawnGem(boss.x, boss.y, 500); 
+
+                        // --- NUEVO: RECOMPENSA DE VICTORIA (DROPS DE CORAZONES) ---
+                        if (typeof spawnHeart === 'function') {
+                            // Spawnea 3 corazones alrededor de la posición del jefe muerto
+                            for (let i = 0; i < 3; i++) {
+                                const offsetX = (Math.random() - 0.5) * 40;
+                                const offsetY = (Math.random() - 0.5) * 40;
+                                spawnHeart(boss.x + offsetX, boss.y + offsetY, 25); // Cura 25 HP cada uno
+                            }
+                        } else if (typeof spawnPickup === 'function') {
+                            // Alternativa si usas un creador de items genérico
+                            for (let i = 0; i < 3; i++) {
+                                spawnPickup(boss.x + (Math.random() - 0.5) * 30, boss.y + (Math.random() - 0.5) * 30, 'heart');
+                            }
+                        } else {
+                            // Alternativa directa: Si no hay entidad corazón creada, curar directamente al jugador como feedback inmediato
+                            player.hp = Math.min(player.maxHp, player.hp + (player.maxHp * 0.5)); // Cura el 50% de la vida total
+                            if (typeof showToast === 'function') showToast("❤️ ¡Esencia de Jefe absorbida: +50% HP! ❤️");
+                        }
+
+                        if (typeof showToast === 'function') showToast("🏆 ¡JEFE DESTRUIDO! 🏆");
                     }
                     if (!p.active) continue; // Si la bala se quedó sin pierce, saltar al siguiente
                 }
@@ -590,6 +612,58 @@ function updateParticles(dt) {
 
             if (pt.life <= 0) {
                 pt.active = false;
+            }
+        }
+    }
+}
+
+// --- PICKUPS (CORAZONES, ETC) ---
+const maxPickups = 50;
+const pickups = Array.from({ length: maxPickups }, () => ({
+    active: false,
+    x: 0,
+    y: 0,
+    type: 'heart',
+    value: 0,
+    radius: 8
+}));
+
+function spawnHeart(x, y, healAmount) {
+    for (let i = 0; i < maxPickups; i++) {
+        const p = pickups[i];
+        if (!p.active) {
+            p.active = true;
+            p.x = x;
+            p.y = y;
+            p.type = 'heart';
+            p.value = healAmount;
+            break;
+        }
+    }
+}
+
+function updatePickups(dt) {
+    for (let i = 0; i < maxPickups; i++) {
+        const p = pickups[i];
+        if (p.active) {
+            const dx = player.x - p.x;
+            const dy = player.y - p.y;
+            const dist = Math.hypot(dx, dy);
+
+            // Atracción si el jugador está cerca
+            if (dist < player.magnetRadius * 0.8) {
+                p.x += (dx / dist) * 150 * dt;
+                p.y += (dy / dist) * 150 * dt;
+            }
+
+            // Recolección
+            if (dist < 20) {
+                p.active = false;
+                if (p.type === 'heart') {
+                    player.hp = Math.min(player.maxHp, player.hp + p.value);
+                    if (typeof showToast === 'function') showToast(`❤️ ¡+${p.value} HP Recuperados! ❤️`);
+                    if (typeof spawnDamageParticles === 'function') spawnDamageParticles(player.x, player.y, [1.0, 0.2, 0.3, 1.0]);
+                }
             }
         }
     }
