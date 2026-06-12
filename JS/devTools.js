@@ -1,11 +1,11 @@
 // ==========================================
-// DEV PANEL — Solo para desarrollo
-// Activar / desactivar con backtick (`) o F2
+// DEV PANEL — Solo para desarrollo (ACTUALIZADO)
+// Activar / desactivar con backtick (`) o F2 / o
 // ==========================================
 
 const DEV = {
     active: false,
-    invincible: true,      // Sincronizado con player.js (ver instrucciones)
+    invincible: true,      // Sincronizado con player.js
     speedMult: 1.0,        // Multiplicador de dt del game loop
     showHitboxes: false,
 };
@@ -19,7 +19,9 @@ _devCSS.textContent = `
     top: 10px;
     left: 10px;
     width: 230px;
-    background: rgba(10, 10, 20, 0.93);
+    max-height: 90vh; /* Evita que se salga de pantallas chicas */
+    overflow-y: auto;  /* Scroll interno si crece mucho */
+    background: rgba(10, 10, 20, 0.95);
     border: 1px solid #00ffaa;
     border-radius: 6px;
     color: #e0ffe0;
@@ -29,6 +31,9 @@ _devCSS.textContent = `
     user-select: none;
     padding-bottom: 6px;
 }
+#dev-panel::-webkit-scrollbar { width: 4px; }
+#dev-panel::-webkit-scrollbar-thumb { background: #00ffaa44; border-radius: 2px; }
+
 #dev-panel .dev-header {
     background: #00ffaa22;
     border-bottom: 1px solid #00ffaa44;
@@ -57,7 +62,7 @@ _devCSS.textContent = `
 #dev-panel button {
     display: inline-block;
     margin: 2px 2px 2px 0;
-    padding: 3px 7px;
+    padding: 3px 6px;
     background: #112211;
     border: 1px solid #00ffaa55;
     border-radius: 3px;
@@ -68,7 +73,7 @@ _devCSS.textContent = `
 }
 #dev-panel button:hover { background: #1a3322; border-color: #00ffaa; }
 #dev-panel input[type=range] { width: 130px; vertical-align: middle; }
-#dev-stats { color: #88ffbb; line-height: 1.6; font-size: 11px; }
+#dev-stats { color: #88ffbb; line-height: 1.5; font-size: 11px; }
 `;
 document.head.appendChild(_devCSS);
 
@@ -85,6 +90,18 @@ function DevTools_init() {
         <div class="dev-section">
             <b>ESTADO EN VIVO</b>
             <div id="dev-stats">Esperando partida...</div>
+        </div>
+
+        <div class="dev-section">
+            <b>PROBAR RELIQUIAS</b>
+            <button onclick="DevTools_upgradeRelic('grimorio_alquimia')">📖 Grim</button>
+            <button onclick="DevTools_upgradeRelic('fuego_fatuo')">🔥 Fuego</button>
+            <button onclick="DevTools_upgradeRelic('estatica_disruptiva')">⚡⚡ Estat</button>
+            <br>
+            <button onclick="DevTools_upgradeRelic('botas_hermes')">🥾 Herm</button>
+            <button onclick="DevTools_upgradeRelic('espejismo')">🧥 Capa</button>
+            <button onclick="DevTools_upgradeRelic('vampirismo')">🩸 Vamp</button>
+            <button onclick="DevTools_resetRelics()" style="color:#ffaa00; border-color:#ffaa0044; font-size:9px;">🔄 Reset</button>
         </div>
 
         <div class="dev-section">
@@ -134,7 +151,7 @@ function DevTools_init() {
         </div>
 
         <div class="dev-section" style="font-size:10px; color:#446644; padding-top:4px;">
-            Atajo: backtick (´) o F2
+            Atajo: backtick (´) o F2 o O
         </div>
     `;
     document.body.appendChild(panel);
@@ -150,7 +167,7 @@ function DevTools_toggle() {
     if (panel) panel.style.display = DEV.active ? 'block' : 'none';
 }
 
-// --- STATS EN VIVO ---
+// --- STATS EN VIVO (MUESTRA LAS RELIQUIAS AHORA) ---
 function DevTools_updateStats() {
     const el = document.getElementById('dev-stats');
     if (!el || !DEV.active || typeof gameTime === 'undefined') return;
@@ -159,14 +176,22 @@ function DevTools_updateStats() {
     const secs = Math.floor(gameTime % 60).toString().padStart(2, '0');
 
     let activeEnemies = 0;
-    for (let i = 0; i < maxEnemies; i++) if (enemies[i].active) activeEnemies++;
+    for (let i = 0; i < maxEnemies; i++) if (enemies[i] && enemies[i].active) activeEnemies++;
 
     let activeProj = 0;
-    for (let i = 0; i < maxProjectiles; i++) if (projectiles[i].active) activeProj++;
+    for (let i = 0; i < maxProjectiles; i++) if (projectiles[i] && projectiles[i].active) activeProj++;
 
     const bossStatus = isBossFightActive
         ? '⚠️ ACTIVO'
         : bossSpawned ? '✅ MUERTO' : '⏳ PENDIENTE';
+
+    // String seguro para renderizar los niveles de las reliquias en vivo
+    let relicsLiveStatus = "Ninguna";
+    if (player && player.reliquias) {
+        relicsLiveStatus = `<br>💎 <b>Niveles de Build:</b><br>` +
+            `🔹 Grm:${player.reliquias.grimorio_alquimia || 0} | Fgo:${player.reliquias.fuego_fatuo || 0} | Est:${player.reliquias.estatica_disruptiva || 0}<br>` +
+            `🔹 Hrm:${player.reliquias.botas_hermes || 0} | Esp:${player.reliquias.espejismo || 0} | Vmp:${player.reliquias.vampirismo || 0}`;
+    }
 
     el.innerHTML = `
         ⏱ ${mins}:${secs} &nbsp;|&nbsp; LV ${player.level}<br>
@@ -176,7 +201,40 @@ function DevTools_updateStats() {
         💀 Kills: ${typeof kills !== 'undefined' ? kills : '?'}<br>
         🏁 Boss: ${bossStatus}<br>
         ⚡ Speed: ${DEV.speedMult.toFixed(1)}x
+        ${relicsLiveStatus}
     `;
+}
+
+// --- SUBIR NIVEL A UNA RELIQUIA DESDE EL PANEL ---
+function DevTools_upgradeRelic(id) {
+    if (!player || !player.reliquias) return;
+
+    // Soporte para ambos nombres de funcion por si acaso
+    const funcMejora = typeof aplicarMejoraReliquia === 'function' ? aplicarMejoraReliquia : (typeof subirNivelReliquia === 'function' ? subirNivelReliquia : null);
+
+    if (funcMejora) {
+        if ((player.reliquias[id] || 0) < 3) {
+            funcMejora(id);
+            if (typeof showToast === 'function') showToast(`DevTools: +1 Nivel a ${id}`);
+        } else {
+            if (typeof showToast === 'function') showToast(`Máximo nivel alcanzado (Nivel 3)`);
+        }
+    } else {
+        console.error("No se encontró la función aplicarMejoraReliquia o subirNivelReliquia en el juego.");
+    }
+}
+
+// --- RESETEAR TODAS LAS RELIQUIAS A NIVEL 0 ---
+function DevTools_resetRelics() {
+    if (!player || !player.reliquias) return;
+    Object.keys(player.reliquias).forEach(id => {
+        player.reliquias[id] = 0;
+    });
+    // Resetear multiplicadores base de reliquias modificadas mecánicamente
+    player.evasionChance = 0;
+    player.maxProjectilePierce = 1;
+    player.vampChance = 0;
+    if (typeof showToast === 'function') showToast(`🔄 Reliquias limpiadas a Nivel 0`);
 }
 
 // --- GOD MODE ---
@@ -184,21 +242,21 @@ function DevTools_toggleGodMode() {
     DEV.invincible = !DEV.invincible;
     const el = document.getElementById('dev-inv');
     if (el) el.textContent = DEV.invincible ? 'ON' : 'OFF';
-    showToast(`God Mode: ${DEV.invincible ? 'ON' : 'OFF'}`);
+    if (typeof showToast === 'function') showToast(`God Mode: ${DEV.invincible ? 'ON' : 'OFF'}`);
 }
 
 // --- TIEMPO ---
 function DevTools_skipToBoss() {
     if (typeof gameTime !== 'undefined') {
         gameTime = 299;
-        showToast('⏩ Saltando al Boss...');
+        if (typeof showToast === 'function') showToast('⏩ Saltando al Boss...');
     }
 }
 
 function DevTools_skipToTime(seconds) {
     if (typeof gameTime !== 'undefined') {
         gameTime = seconds;
-        showToast(`⏩ Tiempo: ${seconds}s`);
+        if (typeof showToast === 'function') showToast(`⏩ Tiempo: ${seconds}s`);
     }
 }
 
@@ -207,17 +265,19 @@ function DevTools_resetTime() {
     gameTime = 0;
     if (typeof bossSpawned !== 'undefined') {
         bossSpawned = false;
-        boss.active = false;
+        if (typeof boss !== 'undefined') boss.active = false;
         isBossFightActive = false;
-        SoundManager.playBGM('gameplay');
+        if (typeof SoundManager !== 'undefined') SoundManager.playBGM('gameplay');
     }
-    showToast('⏪ Tiempo reseteado');
+    if (typeof showToast === 'function') showToast('⏪ Tiempo reseteado');
 }
 
 // --- LEVEL UP ---
 function DevTools_forceLevelUp(times = 1) {
-    for (let i = 0; i < times; i++) {
-        gainXp(player.maxXp - player.xp + 1);
+    if (typeof gainXp === 'function') {
+        for (let i = 0; i < times; i++) {
+            gainXp(player.maxXp - player.xp + 1);
+        }
     }
 }
 
@@ -236,7 +296,7 @@ function DevTools_spawnEnemy(type, count = 10) {
     let spawned = 0;
     for (let j = 0; j < maxEnemies && spawned < count; j++) {
         const e = enemies[j];
-        if (!e.active) {
+        if (e && !e.active) {
             const angle = (spawned / count) * Math.PI * 2;
             const r = 220 + Math.random() * 80;
             e.active = true;
@@ -252,20 +312,20 @@ function DevTools_spawnEnemy(type, count = 10) {
             spawned++;
         }
     }
-    showToast(`Spawneados ${spawned}× ${def.name}`);
+    if (typeof showToast === 'function') showToast(`Spawneados ${spawned}× ${def.name}`);
 }
 
 function DevTools_nukeEnemies() {
     let count = 0;
     for (let i = 0; i < maxEnemies; i++) {
-        if (enemies[i].active) {
-            spawnGem(enemies[i].x, enemies[i].y, enemies[i].maxHp);
+        if (enemies[i] && enemies[i].active) {
+            if (typeof spawnGem === 'function') spawnGem(enemies[i].x, enemies[i].y, enemies[i].maxHp);
             enemies[i].active = false;
             count++;
         }
     }
     if (typeof kills !== 'undefined') kills += count;
-    showToast(`💀 Nuke: ${count} enemigos eliminados`);
+    if (typeof showToast === 'function') showToast(`💀 Nuke: ${count} enemigos eliminados`);
 }
 
 // --- VELOCIDAD DEL JUEGO ---
@@ -282,7 +342,8 @@ function DevTools_toggleHitboxes() {
     if (el) el.textContent = DEV.showHitboxes ? 'ON' : 'OFF';
 }
 
+// Inicialización automática
 DevTools_init();
 window.addEventListener('keydown', (e) => {
-    if (e.key === '`' || e.key === 'o') DevTools_toggle();
+    if (e.key === '`' || e.key === 'o' || e.key === 'F2') DevTools_toggle();
 });

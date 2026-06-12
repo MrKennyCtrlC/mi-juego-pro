@@ -2,6 +2,48 @@
 // SISTEMA DE INTERFAZ DE USUARIO (UI)
 // ==========================================
 
+const RELIQUIAS_BASE = {
+    // --- OFENSIVAS ---
+    grimorio_alquimia: {
+        nombre: "Grimorio de Alquimia",
+        tipo: "ofensiva",
+        sprite: "ITEM_GRIMORIO_ALQUIMIA",
+        descripcion: ["+1 Perforación de proyectil", "+2 Perforación de proyectil", "+3 Perforación de proyectil"]
+    },
+    fuego_fatuo: {
+        nombre: "Poción de Fuego Fatuo",
+        tipo: "ofensiva",
+        sprite: "ITEM_FUEGO_FATUO",
+        descripcion: ["Deja un rastro de fuego al caminar", "Mayor duración del fuego", "Mayor daño y área de fuego"]
+    },
+    estatica_disruptiva: {
+        nombre: "Estática Disruptiva",
+        tipo: "ofensiva",
+        sprite: "ITEM_ESTATICA_DISRUPTIVA",
+        descripcion: ["Pulso eléctrico cercano periódico", "Más radio y daño de choque", "Menor cooldown de descarga"]
+    },
+
+    // --- DEFENSIVAS ---
+    botas_hermes: {
+        nombre: "Botas de Hermes",
+        tipo: "defensiva",
+        sprite: "ITEM_BOTAS_HERMES",
+        descripcion: ["+15% Velocidad de movimiento", "+30% Velocidad de movimiento", "+45% Velocidad de movimiento"]
+    },
+    espejismo: {
+        nombre: "Capa del Espejismo",
+        tipo: "defensiva",
+        sprite: "ITEM_ESPEJISMO",
+        descripcion: ["10% Probabilidad de esquivar (MISS)", "20% Probabilidad de esquivar (MISS)", "30% Probabilidad de esquivar (MISS)"]
+    },
+    vampirismo: {
+        nombre: "Amuleto de Vampirismo",
+        tipo: "defensiva",
+        sprite: "ITEM_VAMPIRISMO",
+        descripcion: ["5% Probabilidad de recuperar 1 HP al matar", "7% Probabilidad de recuperar 1 HP al matar", "10% Probabilidad de recuperar 1 HP al matar"]
+    }
+};
+
 const UI = {
     // Actualización de textos y barras del HUD
     updateHUD(gameTime, playerHp, playerMaxHp, playerXp, playerMaxXp, playerLevel, activeEnemyCount, fps) {
@@ -46,17 +88,35 @@ function showToast(message) {
     }, 2500);
 }
 
+// Diccionario de iconos temáticos por ID de reliquia
+const relicIcons = {
+    grimorio_alquimia: '📖',
+    fuego_fatuo:        '🔥',
+    estatica_disruptiva: '⚡',
+    botas_hermes:       '🥾',
+    espejismo:          '🧥',
+    vampirismo:         '🩸'
+};
+
 function showLevelUpModal() {
     const container = document.getElementById('upgrade-options');
     container.innerHTML = '';
 
     // Seleccionar 3 mejoras aleatorias únicas del pool (usando el helper de RNG)
-    const choices = RNG.getRandomUpgrades(upgrades, 3);
+    const poolDisponible = obtenerPoolCompletoMejoras();
+    const choices = rng.getRandomUpgrades(poolDisponible, 3);
 
     choices.forEach(upg => {
         const card = document.createElement('div');
-        card.className = 'upgrade-card';
+        card.className = 'upgrade-card' + (upg.isRelic ? ' upgrade-card--relic' : '');
+
+        // Mostrar icono si es una reliquia
+        const iconHtml = upg.isRelic && relicIcons[upg.id]
+            ? `<div class="relic-pixel-icon">${relicIcons[upg.id]}</div>`
+            : '';
+
         card.innerHTML = `
+            ${iconHtml}
             <h3>${upg.name}</h3>
             <p>${upg.desc}</p>
         `;
@@ -302,3 +362,63 @@ document.addEventListener('DOMContentLoaded', () => {
     // Cargar estadísticas iniciales
     renderStatsTable();
 });
+
+let faseSeleccion = "ofensiva"; // Puede ser "ofensiva" o "defensiva"
+
+function mostrarMenuReliquiasInicial() {
+    // 1. Congelar el juego inmediatamente
+    isPaused = true;
+
+    const screen = document.getElementById("relic-selection-screen");
+    const title = document.getElementById("relic-title");
+    const container = document.getElementById("relic-options-container");
+
+    // Limpiar opciones anteriores
+    container.innerHTML = "";
+    screen.classList.remove("hidden");
+
+    title.innerText = faseSeleccion === "ofensiva" ? "ELIGE UNA RELIQUIA OFENSIVA" : "ELIGE UNA RELIQUIA DEFENSIVA";
+
+    // Filtrar reliquias según la fase actual
+    Object.keys(RELIQUIAS_BASE).forEach(id => {
+        const reliquia = RELIQUIAS_BASE[id];
+        if (reliquia.tipo === faseSeleccion) {
+
+            // Icono temático
+            const icon = relicIcons[id] || '📦';
+
+            // Crear la tarjeta interactiva
+            const card = document.createElement("div");
+            card.className = "relic-card";
+            card.innerHTML = `
+                <div class="relic-pixel-icon">${icon}</div>
+                <h3>${reliquia.nombre}</h3>
+                <p>${reliquia.descripcion[0]}</p>
+            `;
+
+            // Evento al hacer clic en la reliquia
+            card.onclick = () => equiparReliquiaInicial(id);
+            container.appendChild(card);
+        }
+    });
+}
+
+function equiparReliquiaInicial(id) {
+    // Subir a nivel 1 en el inventario del jugador
+    player.reliquias[id] = 1;
+
+    // Aplicar efectos mecánicos inmediatos si los tienen
+    if (id === "botas_hermes") player.speedMultiplier += 0.15;
+    if (id === "espejismo") player.evasionChance = 0.10;
+    if (id === "grimorio_alquimia") player.maxProjectilePierce = 2; // Pasa de atravesar 1 a atravesar 2
+
+    if (faseSeleccion === "ofensiva") {
+        // Pasar a la siguiente fase
+        faseSeleccion = "defensiva";
+        mostrarMenuReliquiasInicial();
+    } else {
+        // Terminar selección, cerrar menú y arrancar el juego
+        document.getElementById("relic-selection-screen").classList.add("hidden");
+        isPaused = false;
+    }
+}

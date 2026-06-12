@@ -8,7 +8,7 @@ const CELL_SIZE = 60;
 const NUM_BUCKETS = 8192;
 
 // --- FUNCIONES RNG Y PROBABILIDAD ---
-const RNG = {
+const rng = {
     // Retorna un ángulo aleatorio entre 0 y 2*PI
     randomAngle() {
         return Math.random() * Math.PI * 2;
@@ -47,3 +47,7 @@ const RNG = {
         }
     }
 };
+
+// Forzar a que el juego acepte tanto 'rng' como 'RNG' globalmente
+if (typeof rng !== 'undefined') window.RNG = rng;
+if (typeof RNG !== 'undefined') window.rng = RNG;

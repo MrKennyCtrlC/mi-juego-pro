@@ -150,6 +150,14 @@
     </div>
   </div>
 
+  <div id="relic-selection-screen" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h2 id="relic-title">ELIGE TU RELIQUIA OFENSIVA</h2>
+      <p class="subtitle">Define tu estilo de juego para esta partida</p>
+      <div id="relic-options-container" class="relic-grid">
+      </div>
+    </div>
+  </div>
 
   <script src="js/audioManager.js"></script>
   <script src="js/rng.js"></script>
@@ -520,6 +528,7 @@
 
     function startGame() {
       // Activar AudioContext al primer gesto del usuario
+      mostrarMenuReliquiasInicial();
       AudioEngine.init();
 
       // Ocultar overlays de menú y game-over
@@ -556,6 +565,25 @@
       enemySpawnTimer = 0;
       enemySpawnInterval = 0.5;
 
+      // Resetear timers de reliquias pasivas
+      if (typeof window !== 'undefined') {
+        // Los timers viven en enemies.js como variables de módulo
+        // Los reseteamos desde aquí accediendo a su nombre global via eval-safe pattern
+        window._resetRelicTimers && window._resetRelicTimers();
+      }
+
+      // Resetear reliquias del jugador
+      player.reliquias = {
+        grimorio_alquimia: 0,
+        fuego_fatuo: 0,
+        estatica_disruptiva: 0,
+        botas_hermes: 0,
+        espejismo: 0,
+        vampirismo: 0
+      };
+      player.evasionChance = 0;
+      player.maxProjectilePierce = 1;
+
       // Limpiar Object Pools
       resetPools();
 
@@ -588,6 +616,7 @@
     let fpsTimer = 0;
     let fpsCounter = 0;
     let currentFps = 60;
+    let _lastDt = 0; // Almacena el dt del frame actual para el sistema de popups
 
     function update(dt) {
       if (typeof DEV !== 'undefined') dt *= DEV.speedMult;
@@ -619,6 +648,11 @@
       updateGems(dt);
       updateParticles(dt);
       checkPlayerDamage(dt);
+
+      // --- RELIQUIAS PASIVAS (Fuego Fatuo + Estática Disruptiva) ---
+      if (typeof window.actualizarReliquiasPasivas === 'function') {
+        window.actualizarReliquiasPasivas(dt);
+      }
 
       // Interpolación de la cámara suave para seguir al jugador
       camera.x += (player.x - camera.x) * camera.lerpSpeed;
@@ -713,6 +747,11 @@
         }
       }
 
+      // --- Popups flotantes de daño (sobre enemigos, bajo jugador) ---
+      if (typeof window.updateAndRenderDamagePopups === 'function') {
+        window.updateAndRenderDamagePopups(ctx, _lastDt, scaleX, scaleY, halfW, halfH, camera.x, camera.y);
+      }
+
       // --- Jugador ---
       {
         const screenX = (player.x - camera.x) * scaleX + halfW;
@@ -799,6 +838,7 @@
       lastTime = time;
 
       if (dt > 0.08) dt = 0.08;
+      _lastDt = dt; // Guardar para el render de popups flotantes
 
       // Cálculo de FPS
       fpsTimer += dt;

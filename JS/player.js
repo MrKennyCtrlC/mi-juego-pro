@@ -23,7 +23,17 @@ const player = {
     attackTimer: 0,
     attackInterval: 0.8,
     directionX: 0,
-    directionY: 0
+    directionY: 0,
+    reliquias: {
+        grimorio_alquimia: 0,
+        fuego_fatuo: 0,
+        estatica_disruptiva: 0,
+        botas_hermes: 0,
+        espejismo: 0,
+        vampirismo: 0
+    },
+    evasionChance: 0,
+    maxProjectilePierce: 1
 };
 
 // --- CONTROLES DE ENTRADA (INPUT GESTION) ---
@@ -151,6 +161,70 @@ const upgrades = [
     }
 ];
 
+// Genera una lista unificada de mejoras comunes + reliquias elegibles
+function obtenerPoolCompletoMejoras() {
+    // 1. Empezamos con las mejoras básicas fijas de siempre
+    let poolCompleto = [...upgrades];
+
+    // 2. Revisamos las 6 reliquias para ver cuáles pueden subir de nivel
+    Object.keys(RELIQUIAS_BASE).forEach(id => {
+        const nivelActual = player.reliquias[id] || 0;
+
+        // Si la reliquia aún no llega al Nivel Máximo (Nivel 3), puede aparecer en la tómbola
+        if (nivelActual < 3) {
+            const reliquiaData = RELIQUIAS_BASE[id];
+            const proximoNivel = nivelActual + 1;
+
+            poolCompleto.push({
+                id: id,
+                isRelic: true, // Bandera por si quieres ponerle un marco especial en la UI
+                name: `💎 ${reliquiaData.nombre} (Nivel ${proximoNivel})`,
+                desc: reliquiaData.descripcion[nivelActual], // El texto exacto del siguiente nivel
+                action: () => { aplicarMejoraReliquia(id); } // Ejecuta su escalado lógico
+            });
+        }
+    });
+
+    return poolCompleto;
+}
+
+function aplicarMejoraReliquia(id) {
+    player.reliquias[id]++; // Incrementa el nivel en tu inventario (0 -> 1 -> 2 -> 3)
+    const nivel = player.reliquias[id];
+
+    // ESCALADO DE ESTADÍSTICAS SEGÚN TU DISEÑO:
+    switch (id) {
+        case 'botas_hermes':
+            player.speedMultiplier += 0.15; // +15%, +30%, +45% total
+            break;
+
+        case 'espejismo':
+            if (nivel === 1) player.evasionChance = 0.10;
+            if (nivel === 2) player.evasionChance = 0.20;
+            if (nivel === 3) player.evasionChance = 0.30;
+            break;
+
+        case 'grimorio_alquimia':
+            if (nivel === 1) player.maxProjectilePierce = 2; // Atraviesa 1 extra
+            if (nivel === 2) player.maxProjectilePierce = 3;
+            if (nivel === 3) player.maxProjectilePierce = 4;
+            break;
+
+        case 'vampirismo':
+            // Las probabilidades (5%, 7%, 10%) las leerá tu función de matar enemigos
+            if (nivel === 1) player.vampChance = 0.05;
+            if (nivel === 2) player.vampChance = 0.07;
+            if (nivel === 3) player.vampChance = 0.10;
+            break;
+
+        case 'fuego_fatuo':
+        case 'estatica_disruptiva':
+            // El motor leerá directamente el entero 'player.reliquias[id]' 
+            // en sus respectivos bucles para aumentar daño/radio/duración.
+            break;
+    }
+}
+
 // --- FUNCIONES DEL JUGADOR ---
 
 function updatePlayer(dt) {
@@ -195,7 +269,12 @@ function updatePlayer(dt) {
     }
 }
 
+// Cooldown para el toast de evasión (evita spam)
+let _evasionToastCooldown = 0;
+
 function checkPlayerDamage(dt) {
+    if (_evasionToastCooldown > 0) _evasionToastCooldown -= dt;
+
     const pCx = Math.floor(player.x / CELL_SIZE);
     const pCy = Math.floor(player.y / CELL_SIZE);
 
@@ -209,9 +288,19 @@ function checkPlayerDamage(dt) {
                     const dx = e.x - player.x;
                     const dy = e.y - player.y;
                     const dist = Math.hypot(dx, dy);
-                    const playerHitRadius = player.width * 0.4; // Ajuste fino del radio de colisión del jugador
+                    const playerHitRadius = player.width * 0.4;
 
                     if (dist < (playerHitRadius + e.radius)) {
+                        // 🧥 ESPEJISMO: Tirada de evasión por contacto
+                        if (player.evasionChance > 0 && Math.random() < player.evasionChance) {
+                            if (_evasionToastCooldown <= 0) {
+                                if (typeof showToast === 'function') showToast("💨 ¡EVADIDO!");
+                                _evasionToastCooldown = 1.5; // Mínimo 1.5s entre toasts
+                            }
+                            nIdx = entityNext[nIdx];
+                            continue;
+                        }
+
                         player.hp -= e.damage * dt;
                         if (player.hp <= 0) {
                             player.hp = 0;
