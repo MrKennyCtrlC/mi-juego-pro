@@ -1,6 +1,10 @@
 // ==========================================
 // SISTEMA DE AUDIO LOCAL (SOUND MANAGER)
 // ==========================================
+/**
+ * Gestiona la música de fondo y el volumen global por pistas.
+ * Separa música de gameplay y boss para cambiar la atmósfera del combate.
+ */
 const SoundManager = {
     currentBGM: null,
     tracks: {
@@ -68,6 +72,10 @@ const SoundManager = {
 // ==========================================
 // MOTOR DE SINTETIZACIÓN DE EFECTOS (AUDIO ENGINE)
 // ==========================================
+/**
+ * Motor de audio WebAudio para efectos cortos.
+ * Maneja ganancia global, volumen de SFX y síntesis de disparos o impactos.
+ */
 const AudioEngine = {
     ctx: null,
     masterGain: null,
@@ -142,4 +150,4 @@ const AudioEngine = {
             osc.start(now); osc.stop(now + 0.2);
         }
     }
-};
+};

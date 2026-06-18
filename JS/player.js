@@ -1,7 +1,15 @@
 // --- INICIALIZACIÓN GLOBAL DE MONEDAS ---
+/**
+ * Estado global de monedas de la sesión actual.
+ * `sessionGold` se consolida al terminar una partida o volver al menú.
+ */
 const game = { sessionGold: 0 };
 
 // --- GAME ENTITIES POOLS ---
+/**
+ * Estado principal del jugador.
+ * Define vida, experiencia, movimiento, disparo y reliquias activas.
+ */
 const player = {
     totalGold: parseInt(localStorage.getItem("game_total_gold")) || 0,
     x: 0,
@@ -42,11 +50,20 @@ const player = {
 };
 
 // --- CONTROLES DE ENTRADA (INPUT GESTION) ---
+/**
+ * Entradas temporales del jugador.
+ * `keys` guarda teclado, `touchStartPos` marca el joystick táctil
+ * e `isDragging` indica si el control móvil está siendo arrastrado.
+ */
 const keys = {};
 let touchStartPos = { x: 0, y: 0 };
 let isDragging = false;
 
 // Registrar listeners de teclado tras carga del DOM
+/**
+ * Registra los controles de teclado y táctil cuando el DOM ya está listo.
+ * Este bloque conecta el input con la lógica de pausa y movimiento.
+ */
 document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('keydown', (e) => {
         keys[e.key] = true;
@@ -110,6 +127,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // --- POOL DE PROYECTILES ---
+/**
+ * Pool fijo de proyectiles reutilizables.
+ * Evita crear nuevos objetos en cada disparo y estabiliza el rendimiento.
+ */
 const projectiles = Array.from({ length: maxProjectiles }, () => ({
     active: false,
     x: 0,
@@ -123,6 +144,10 @@ const projectiles = Array.from({ length: maxProjectiles }, () => ({
 }));
 
 // --- MEJORAS DEL JUGADOR (UPGRADES DATA) ---
+/**
+ * Mejoras base disponibles en el sistema de nivel-up.
+ * Cada entrada modifica una estadística concreta del jugador.
+ */
 const upgrades = [
     {
         id: 'damage',
@@ -167,6 +192,10 @@ const upgrades = [
 ];
 
 // Genera una lista unificada de mejoras comunes + reliquias elegibles
+/**
+ * Combina mejoras base con reliquias que aún pueden subir de nivel.
+ * El resultado alimenta la selección de opciones al subir de nivel.
+ */
 function obtenerPoolCompletoMejoras() {
     // 1. Empezamos con las mejoras básicas fijas de siempre
     let poolCompleto = [...upgrades];
@@ -193,6 +222,10 @@ function obtenerPoolCompletoMejoras() {
     return poolCompleto;
 }
 
+/**
+ * Sube una reliquia de nivel y aplica su efecto mecánico inmediato.
+ * `id` identifica la reliquia dentro del inventario del jugador.
+ */
 function aplicarMejoraReliquia(id) {
     player.reliquias[id]++; // Incrementa el nivel en tu inventario (0 -> 1 -> 2 -> 3)
     const nivel = player.reliquias[id];
@@ -232,6 +265,10 @@ function aplicarMejoraReliquia(id) {
 
 // --- FUNCIONES DEL JUGADOR ---
 
+/**
+ * Actualiza movimiento, regeneración y ataque automático del jugador.
+ * `dt` es el delta time en segundos usado para un movimiento independiente de FPS.
+ */
 function updatePlayer(dt) {
     // 1. Leer entradas de movimiento (Teclado)
     let dx = 0;
@@ -275,8 +312,16 @@ function updatePlayer(dt) {
 }
 
 // Cooldown para el toast de evasión (evita spam)
+/**
+ * Temporizador anti-spam para el aviso visual de evasión.
+ * Evita mostrar toasts repetidos cuando Espejismo activa varias esquivas.
+ */
 let _evasionToastCooldown = 0;
 
+/**
+ * Calcula daño por contacto usando la grilla espacial de enemigos.
+ * `dt` ajusta el daño continuo y mantiene la simulación estable.
+ */
 function checkPlayerDamage(dt) {
     if (_evasionToastCooldown > 0) _evasionToastCooldown -= dt;
 
@@ -319,6 +364,10 @@ function checkPlayerDamage(dt) {
     }
 }
 
+/**
+ * Busca el enemigo activo más cercano al jugador.
+ * La función alimenta el auto-aim del sistema de disparo.
+ */
 function findNearestEnemy() {
     let nearestDistSq = Infinity;
     let nearestIdx = -1;
@@ -339,6 +388,10 @@ function findNearestEnemy() {
     return nearestIdx !== -1 ? enemies[nearestIdx] : null;
 }
 
+/**
+ * Dispara proyectiles hacia el objetivo prioritario.
+ * En boss fight prioriza amenazas cercanas; fuera de eso apunta al enemigo más próximo.
+ */
 function shootWeapons() {
     let target = null;
 
@@ -376,6 +429,10 @@ function shootWeapons() {
     }
 }
 
+/**
+ * Activa un proyectil libre del pool y le asigna trayectoria y daño.
+ * Los parámetros definen el origen y la dirección del disparo.
+ */
 function spawnProjectile(startX, startY, targetX, targetY) {
     for (let i = 0; i < maxProjectiles; i++) {
         const p = projectiles[i];
@@ -406,6 +463,10 @@ function spawnProjectile(startX, startY, targetX, targetY) {
     }
 }
 
+/**
+ * Suma experiencia y gestiona el salto de nivel.
+ * `amount` representa la XP obtenida por gemas, drops o eventos del motor.
+ */
 function gainXp(amount) {
     player.xp += amount;
     if (player.xp >= player.maxXp) {
@@ -442,6 +503,10 @@ function gainXp(amount) {
     }
 }
 
+/**
+ * Cambia el estado del juego a `levelUp` para abrir la selección de mejoras.
+ * Bloquea el flujo normal hasta que el jugador elige una opción.
+ */
 function levelUp() {
     gameState = 'levelUp';
     showLevelUpModal();

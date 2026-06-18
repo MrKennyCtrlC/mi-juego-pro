@@ -1,4 +1,8 @@
 // --- CONFIGURACIÓN GLOBAL DEL MOTOR ---
+/**
+ * Límites globales de pools y espacialización.
+ * Estos valores determinan cuántas entidades puede gestionar el motor sin crear objetos nuevos.
+ */
 const maxEnemies = 2500;
 const maxProjectiles = 500;
 const maxGems = 1000;
@@ -8,6 +12,10 @@ const CELL_SIZE = 60;
 const NUM_BUCKETS = 8192;
 
 // --- FUNCIONES RNG Y PROBABILIDAD ---
+/**
+ * Utilidades aleatorias y de drops.
+ * Centraliza selección de mejoras, cálculo de XP y color de gemas.
+ */
 const rng = {
     // Retorna un ángulo aleatorio entre 0 y 2*PI
     randomAngle() {

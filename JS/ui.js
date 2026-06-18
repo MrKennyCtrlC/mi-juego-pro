@@ -44,6 +44,10 @@ const RELIQUIAS_BASE = {
     }
 };
 
+/**
+ * Fachada de interfaz para el HUD principal.
+ * Centraliza timer, vida, XP, nivel, enemigos y FPS.
+ */
 const UI = {
     // Actualización de textos y barras del HUD
     updateHUD(gameTime, playerHp, playerMaxHp, playerXp, playerMaxXp, playerLevel, activeEnemyCount, fps) {
@@ -77,6 +81,9 @@ const UI = {
     }
 };
 
+/**
+ * Refresca el contador de oro de la sesión en pantalla.
+ */
 function updateGoldHUD() {
     const goldDisplay = document.getElementById('gold-display');
     if (!goldDisplay) return;
@@ -84,10 +91,16 @@ function updateGoldHUD() {
     goldDisplay.textContent = `Oro: ${game.sessionGold || 0}`;
 }
 
+/**
+ * Guarda el oro de la última sesión en almacenamiento local.
+ */
 function saveLastSessionGold(amount) {
     localStorage.setItem("game_last_session_gold", Math.max(0, amount || 0));
 }
 
+/**
+ * Muestra el oro de la sesión anterior en el menú principal.
+ */
 function renderLastSessionGold() {
     const lastSessionGold = document.getElementById('last-session-gold');
     if (!lastSessionGold) return;
@@ -97,6 +110,9 @@ function renderLastSessionGold() {
     lastSessionGold.classList.remove('hidden');
 }
 
+/**
+ * Muestra una notificación temporal flotante en la UI.
+ */
 function showToast(message) {
     const toast = document.getElementById('notification-toast');
     toast.textContent = message;
@@ -122,6 +138,9 @@ const relicIcons = {
     vampirismo: '🩸'
 };
 
+/**
+ * Abre el modal de nivel-up con 3 opciones aleatorias del pool disponible.
+ */
 function showLevelUpModal() {
     const container = document.getElementById('upgrade-options');
     container.innerHTML = '';
@@ -154,6 +173,9 @@ function showLevelUpModal() {
     document.getElementById('ui-overlay').classList.remove('hidden');
 }
 
+/**
+ * Cierra el overlay de mejora y devuelve el estado a `playing`.
+ */
 function resumeGame() {
     document.getElementById('ui-overlay').classList.add('hidden');
 
@@ -164,6 +186,9 @@ function resumeGame() {
     gameState = 'playing';
 }
 
+/**
+ * Alterna la pausa del juego y sincroniza el estado de audio.
+ */
 function togglePause() {
     isGamePaused = !isGamePaused;
     const pauseMenu = document.getElementById('pause-menu');
@@ -178,6 +203,9 @@ function togglePause() {
     }
 }
 
+/**
+ * Consolida oro, limpia pools y vuelve al menú principal.
+ */
 function goToMainMenu() {
     if (game.sessionGold > 0) {
         saveLastSessionGold(game.sessionGold);
@@ -205,6 +233,9 @@ function goToMainMenu() {
     renderLastSessionGold();
 }
 
+/**
+ * Guarda un resumen compacto de la partida en el historial local.
+ */
 function saveGameHistory() {
     const minutes = Math.floor(gameTime / 60);
     const seconds = Math.floor(gameTime % 60);
@@ -217,6 +248,9 @@ function saveGameHistory() {
     localStorage.setItem('neon_survivors_history', JSON.stringify(history));
 }
 
+/**
+ * Ejecuta la pantalla de fin de partida y consolida la progresión.
+ */
 function gameOver() {
     SoundManager.stopBGM();
     saveGameHistory();
@@ -246,6 +280,9 @@ function gameOver() {
     renderLastSessionGold();
 }
 
+/**
+ * Renderiza la tabla de partidas registradas en localStorage.
+ */
 function renderStatsTable() {
     const container = document.getElementById('stats-container');
     let history = [];
@@ -280,6 +317,9 @@ function renderStatsTable() {
     `;
 }
 
+/**
+ * Aplica el valor de un slider al sistema de audio correspondiente.
+ */
 function applyVolumeFromSlider(sliderId, type) {
     const slider = document.getElementById(sliderId);
     if (!slider) return;
@@ -298,6 +338,9 @@ function applyVolumeFromSlider(sliderId, type) {
     }
 }
 
+/**
+ * Copia los valores de volumen entre el menú principal y el de pausa.
+ */
 function syncPauseSliders() {
     const masterVol = document.getElementById('master-vol');
     const pMasterVol = document.getElementById('p-master-vol');

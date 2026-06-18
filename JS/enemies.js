@@ -3,6 +3,10 @@
 // ==========================================
 
 // --- GAME ENTITIES POOLS ---
+/**
+ * Pool fijo de enemigos reutilizables.
+ * Cada entidad almacena posición, vida, velocidad, tipo y celda de la grilla espacial.
+ */
 const enemies = Array.from({ length: maxEnemies }, () => ({
     active: false,
     x: 0,
@@ -18,6 +22,10 @@ const enemies = Array.from({ length: maxEnemies }, () => ({
     type: 0
 }));
 
+/**
+ * Pool de gemas de experiencia.
+ * Se activa al derrotar enemigos y luego atrae al jugador con el imán.
+ */
 const gems = Array.from({ length: maxGems }, () => ({
     active: false,
     x: 0,
@@ -29,6 +37,10 @@ const gems = Array.from({ length: maxGems }, () => ({
     magnetSpeed: 0
 }));
 
+/**
+ * Pool de partículas visuales.
+ * Se usa para impactos, muertes y efectos de reliquias sin crear objetos nuevos.
+ */
 const particles = Array.from({ length: maxParticles }, () => ({
     active: false,
     x: 0,
@@ -47,6 +59,10 @@ const particles = Array.from({ length: maxParticles }, () => ({
 
 window.damagePopups = [];
 
+/**
+ * Crea un popup flotante de daño o feedback visual sobre el mundo.
+ * `x` y `y` son coordenadas de mundo; `text` es el mensaje mostrado.
+ */
 window.spawnDamagePopup = function (x, y, text, color = '#ff4444') {
     window.damagePopups.push({
         x: x,
@@ -60,6 +76,10 @@ window.spawnDamagePopup = function (x, y, text, color = '#ff4444') {
 
 // updateAndRenderDamagePopups se llama desde el pipeline de render de index.html
 // con coordenadas de pantalla ya convertidas.
+/**
+ * Actualiza y dibuja los popups de daño en coordenadas de pantalla.
+ * `ctx` es el canvas 2D y el resto de parámetros convierte mundo a pantalla.
+ */
 window.updateAndRenderDamagePopups = function (ctx, dt, scaleX, scaleY, halfW, halfH, camX, camY) {
     for (let i = window.damagePopups.length - 1; i >= 0; i--) {
         const p = window.damagePopups[i];
@@ -96,12 +116,20 @@ let _timerFuegoFatuo = 0;
 let _timerEstatica = 0;
 
 // Resetear timers al iniciar nueva partida
+/**
+ * Reinicia temporizadores internos de reliquias pasivas.
+ * Se ejecuta al iniciar una partida nueva para evitar arrastres de estado.
+ */
 window._resetRelicTimers = function () {
     _timerFuegoFatuo = 0;
     _timerEstatica = 0;
     window.damagePopups = [];
 };
 
+/**
+ * Ejecuta los efectos pasivos de Fuego Fatuo y Estática Disruptiva.
+ * `dt` regula el ritmo de activación de cada reliquia.
+ */
 window.actualizarReliquiasPasivas = function (dt) {
     if (typeof isPaused !== 'undefined' && isPaused) return;
     if (!player || !player.reliquias) return;
@@ -199,6 +227,10 @@ let enemySpawnInterval = 0.5;
 
 // --- FUNCIONES DE SPANWNING ---
 
+/**
+ * Activa un enemigo libre del pool y lo coloca fuera del campo visible.
+ * La selección de tipo y estadísticas depende del tiempo transcurrido.
+ */
 function spawnEnemy() {
     if (isBossFightActive) return;
     for (let i = 0; i < maxEnemies; i++) {
@@ -266,6 +298,10 @@ function spawnEnemy() {
     }
 }
 
+/**
+ * Genera un anillo de enemigos alrededor de un punto.
+ * Se usa principalmente en la fase del boss para reforzar la presión.
+ */
 function spawnRingOfEnemies(centerX, centerY) {
     const numEnemiesInRing = 16;
     const spawnRadius = 450;
@@ -301,6 +337,10 @@ function spawnRingOfEnemies(centerX, centerY) {
 
 // --- ACTUALIZACIONES DE LOGICA DE ENEMIGOS ---
 
+/**
+ * Actualiza enemigos, reconstruye la Spatial Hash Grid y resuelve separación.
+ * `dt` mantiene movimiento y colisiones consistentes entre fotogramas.
+ */
 function updateEnemies(dt) {
     bucketHeaders.fill(-1);
     let activeEnemyCount = 0;
@@ -401,6 +441,10 @@ function updateEnemies(dt) {
 
 // --- DROPS Y EFECTOS ---
 
+/**
+ * Crea una gema de experiencia a partir de la vida máxima del enemigo derrotado.
+ * `enemyMaxHp` define el valor de XP y el color de la gema.
+ */
 function spawnGem(x, y, enemyMaxHp) {
     for (let i = 0; i < maxGems; i++) {
         const g = gems[i];
@@ -417,6 +461,10 @@ function spawnGem(x, y, enemyMaxHp) {
     }
 }
 
+/**
+ * Emite partículas de impacto en el punto del golpe o la muerte.
+ * `color` define la identidad visual del efecto.
+ */
 function spawnDamageParticles(x, y, color) {
     let count = 0;
     for (let i = 0; i < maxParticles; i++) {
@@ -444,6 +492,10 @@ function spawnDamageParticles(x, y, color) {
 
 // --- ACTUALIZACIÓN DE PROYECTILES Y COLISIONES ---
 
+/**
+ * Mueve proyectiles, reduce su vida útil y resuelve colisiones con enemigos y boss.
+ * `dt` hace que el movimiento y el daño se calculen por tiempo real.
+ */
 function checkProjectileCollisions(dt) {
     for (let i = 0; i < maxProjectiles; i++) {
         const p = projectiles[i];
@@ -564,6 +616,10 @@ function checkProjectileCollisions(dt) {
 
 // --- ACTUALIZACIÓN DE GEMAS Y PARTÍCULAS ---
 
+/**
+ * Actualiza gemas recolectables y aplica la curación pasiva por Vampirismo.
+ * `dt` afecta la atracción magnética y la sincronización general.
+ */
 function updateGems(dt) {
     // EFECTO DE VAMPIRISMO
     if (player.reliquias && player.reliquias.vampirismo > 0) {
@@ -600,6 +656,10 @@ function updateGems(dt) {
     }
 }
 
+/**
+ * Avanza la simulación de partículas y las desvanece con el tiempo.
+ * `dt` controla la caída de vida y la fricción visual.
+ */
 function updateParticles(dt) {
     for (let i = 0; i < maxParticles; i++) {
         const pt = particles[i];
@@ -629,6 +689,10 @@ const pickups = Array.from({ length: maxPickups }, () => ({
     radius: 8
 }));
 
+/**
+ * Crea un pickup de corazón para curación.
+ * `healAmount` define cuánta vida restaura al recogerlo.
+ */
 function spawnHeart(x, y, healAmount) {
     for (let i = 0; i < maxPickups; i++) {
         const p = pickups[i];
@@ -643,6 +707,10 @@ function spawnHeart(x, y, healAmount) {
     }
 }
 
+/**
+ * Actualiza pickups de curación, atracción y recolección.
+ * `dt` se usa para mover los objetos hacia el jugador cuando están cerca.
+ */
 function updatePickups(dt) {
     for (let i = 0; i < maxPickups; i++) {
         const p = pickups[i];

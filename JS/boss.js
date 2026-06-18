@@ -2,6 +2,10 @@
 // CONFIGURACIÓN Y LÓGICA DEL JEFE FINAL (BOSS)
 // ==========================================
 
+/**
+ * Estado del jefe final.
+ * Guarda vida, posición, dash, cooldowns y radio de contacto.
+ */
 let boss = {
     active: false,
     x: 0,
@@ -21,6 +25,10 @@ let boss = {
 let bossSpawned = false;
 let isBossFightActive = false;
 
+/**
+ * Actualiza la lógica del boss, su aparición y su patrón de ataque.
+ * `dt` controla el movimiento y el temporizador de habilidades.
+ */
 function updateBoss(dt) {
     // 1. Spawning al minuto 5 (300 segundos)
     if (gameTime >= 300 && !bossSpawned) {

@@ -3,6 +3,10 @@
 // Activar / desactivar con backtick (`) o F2 / o
 // ==========================================
 
+/**
+ * Estado del panel de desarrollo.
+ * Controla visibilidad, invencibilidad, velocidad global y hitboxes.
+ */
 const DEV = {
     active: false,
     invincible: true,      // Sincronizado con player.js
@@ -78,6 +82,10 @@ _devCSS.textContent = `
 document.head.appendChild(_devCSS);
 
 // --- HTML DEL PANEL ---
+/**
+ * Crea el panel de depuración en el DOM y registra el refresco periódico.
+ * El panel expone atajos y controles para probar sistemas del juego.
+ */
 function DevTools_init() {
     const panel = document.createElement('div');
     panel.id = 'dev-panel';
@@ -161,6 +169,9 @@ function DevTools_init() {
 }
 
 // --- TOGGLE PANEL ---
+/**
+ * Alterna la visibilidad del panel de desarrollo.
+ */
 function DevTools_toggle() {
     DEV.active = !DEV.active;
     const panel = document.getElementById('dev-panel');
@@ -168,6 +179,10 @@ function DevTools_toggle() {
 }
 
 // --- STATS EN VIVO (MUESTRA LAS RELIQUIAS AHORA) ---
+/**
+ * Renderiza estadísticas vivas para depuración.
+ * Muestra tiempo, enemigos, proyectiles, vida y reliquias en tiempo real.
+ */
 function DevTools_updateStats() {
     const el = document.getElementById('dev-stats');
     if (!el || !DEV.active || typeof gameTime === 'undefined') return;
@@ -206,6 +221,10 @@ function DevTools_updateStats() {
 }
 
 // --- SUBIR NIVEL A UNA RELIQUIA DESDE EL PANEL ---
+/**
+ * Sube manualmente una reliquia desde el panel.
+ * `id` identifica qué reliquia se está probando.
+ */
 function DevTools_upgradeRelic(id) {
     if (!player || !player.reliquias) return;
 
@@ -225,6 +244,10 @@ function DevTools_upgradeRelic(id) {
 }
 
 // --- RESETEAR TODAS LAS RELIQUIAS A NIVEL 0 ---
+/**
+ * Reinicia todas las reliquias a nivel cero.
+ * También limpia los modificadores mecánicos que dependen de ellas.
+ */
 function DevTools_resetRelics() {
     if (!player || !player.reliquias) return;
     Object.keys(player.reliquias).forEach(id => {
@@ -238,6 +261,9 @@ function DevTools_resetRelics() {
 }
 
 // --- GOD MODE ---
+/**
+ * Activa o desactiva la invencibilidad de pruebas.
+ */
 function DevTools_toggleGodMode() {
     DEV.invincible = !DEV.invincible;
     const el = document.getElementById('dev-inv');
@@ -246,6 +272,9 @@ function DevTools_toggleGodMode() {
 }
 
 // --- TIEMPO ---
+/**
+ * Avanza el reloj hasta la aparición del boss.
+ */
 function DevTools_skipToBoss() {
     if (typeof gameTime !== 'undefined') {
         gameTime = 299;
@@ -253,6 +282,10 @@ function DevTools_skipToBoss() {
     }
 }
 
+/**
+ * Fija el tiempo de partida a un punto concreto.
+ * `seconds` indica el segundo exacto al que saltar.
+ */
 function DevTools_skipToTime(seconds) {
     if (typeof gameTime !== 'undefined') {
         gameTime = seconds;
@@ -260,6 +293,9 @@ function DevTools_skipToTime(seconds) {
     }
 }
 
+/**
+ * Reinicia el reloj de partida y devuelve el combate al estado inicial.
+ */
 function DevTools_resetTime() {
     if (typeof gameTime === 'undefined') return;
     gameTime = 0;
@@ -273,6 +309,10 @@ function DevTools_resetTime() {
 }
 
 // --- LEVEL UP ---
+/**
+ * Fuerza uno o varios aumentos de nivel del jugador.
+ * `times` determina cuántas subidas consecutivas se disparan.
+ */
 function DevTools_forceLevelUp(times = 1) {
     if (typeof gainXp === 'function') {
         for (let i = 0; i < times; i++) {
@@ -289,6 +329,10 @@ const _devEnemyDefs = [
     { name: 'Swarmer', radius: 10.5, maxHp: 35, speed: 120, damage: 11, color: [0.2, 0.9, 0.35, 1.0] },
 ];
 
+/**
+ * Genera una nube de enemigos de un tipo concreto alrededor del jugador.
+ * `type` selecciona la plantilla y `count` define cuántos aparecen.
+ */
 function DevTools_spawnEnemy(type, count = 10) {
     const def = _devEnemyDefs[type];
     if (!def) return;
@@ -315,6 +359,9 @@ function DevTools_spawnEnemy(type, count = 10) {
     if (typeof showToast === 'function') showToast(`Spawneados ${spawned}× ${def.name}`);
 }
 
+/**
+ * Elimina todos los enemigos activos y deja sus drops.
+ */
 function DevTools_nukeEnemies() {
     let count = 0;
     for (let i = 0; i < maxEnemies; i++) {
@@ -329,6 +376,10 @@ function DevTools_nukeEnemies() {
 }
 
 // --- VELOCIDAD DEL JUEGO ---
+/**
+ * Ajusta el multiplicador global de velocidad del juego.
+ * `val` viene del slider del panel y se convierte a escala multiplicativa.
+ */
 function DevTools_setSpeed(val) {
     DEV.speedMult = parseFloat(val) / 100;
     const el = document.getElementById('dev-speed-val');
@@ -336,6 +387,9 @@ function DevTools_setSpeed(val) {
 }
 
 // --- HITBOXES ---
+/**
+ * Activa o desactiva la visualización de hitboxes de depuración.
+ */
 function DevTools_toggleHitboxes() {
     DEV.showHitboxes = !DEV.showHitboxes;
     const el = document.getElementById('dev-hb');
