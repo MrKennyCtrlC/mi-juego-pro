@@ -64,7 +64,11 @@ const UI = {
         document.getElementById('level-display').textContent = `LV ${playerLevel}`;
 
         // Enemigos
-        document.getElementById('enemy-display').textContent = `Enemigos: ${activeEnemyCount}`;
+        if (activeEnemyCount !== undefined) {
+            document.getElementById('enemy-display').textContent = `Enemigos: ${activeEnemyCount}`;
+        }
+
+        updateGoldHUD();
 
         // FPS
         if (fps !== undefined) {
@@ -72,6 +76,26 @@ const UI = {
         }
     }
 };
+
+function updateGoldHUD() {
+    const goldDisplay = document.getElementById('gold-display');
+    if (!goldDisplay) return;
+
+    goldDisplay.textContent = `Oro: ${game.sessionGold || 0}`;
+}
+
+function saveLastSessionGold(amount) {
+    localStorage.setItem("game_last_session_gold", Math.max(0, amount || 0));
+}
+
+function renderLastSessionGold() {
+    const lastSessionGold = document.getElementById('last-session-gold');
+    if (!lastSessionGold) return;
+
+    const gold = parseInt(localStorage.getItem("game_last_session_gold")) || 0;
+    lastSessionGold.textContent = `Ultima sesion: ${gold} oro`;
+    lastSessionGold.classList.remove('hidden');
+}
 
 function showToast(message) {
     const toast = document.getElementById('notification-toast');
@@ -91,11 +115,11 @@ function showToast(message) {
 // Diccionario de iconos temáticos por ID de reliquia
 const relicIcons = {
     grimorio_alquimia: '📖',
-    fuego_fatuo:        '🔥',
+    fuego_fatuo: '🔥',
     estatica_disruptiva: '⚡',
-    botas_hermes:       '🥾',
-    espejismo:          '🧥',
-    vampirismo:         '🩸'
+    botas_hermes: '🥾',
+    espejismo: '🧥',
+    vampirismo: '🩸'
 };
 
 function showLevelUpModal() {
@@ -155,6 +179,14 @@ function togglePause() {
 }
 
 function goToMainMenu() {
+    if (game.sessionGold > 0) {
+        saveLastSessionGold(game.sessionGold);
+        player.totalGold += game.sessionGold;
+        localStorage.setItem("game_total_gold", player.totalGold);
+        game.sessionGold = 0;
+        updateGoldHUD();
+    }
+
     // Limpiar todos los pools activos
     resetPools();
     // Detener música
@@ -170,6 +202,7 @@ function goToMainMenu() {
     document.getElementById('float-pause-btn').classList.add('hidden');
     // Refrescar tabla de estadísticas
     renderStatsTable();
+    renderLastSessionGold();
 }
 
 function saveGameHistory() {
@@ -179,7 +212,7 @@ function saveGameHistory() {
 
     let history = [];
     try { history = JSON.parse(localStorage.getItem('neon_survivors_history') || '[]'); } catch (e) { }
-    history.unshift({ time: timeStr, level: player.level, kills });
+    history.unshift({ time: timeStr, level: player.level, kills, gold: game.sessionGold });
     if (history.length > 8) history = history.slice(0, 8); // Guardar solo las últimas 8
     localStorage.setItem('neon_survivors_history', JSON.stringify(history));
 }
@@ -187,15 +220,30 @@ function saveGameHistory() {
 function gameOver() {
     SoundManager.stopBGM();
     saveGameHistory();
-    gameState = 'gameOver';
-    document.getElementById('game-over-screen').classList.remove('hidden');
+    saveLastSessionGold(game.sessionGold);
 
     const minutes = Math.floor(gameTime / 60);
     const seconds = Math.floor(gameTime % 60);
     const timeStr = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
+    // Consolidar y guardar oro persistente
+    player.totalGold += game.sessionGold;
+    localStorage.setItem("game_total_gold", player.totalGold);
+
+    gameState = 'gameOver';
+    document.getElementById('game-over-screen').classList.remove('hidden');
+
     document.getElementById('survival-time').textContent = `Sobrevivido: ${timeStr}`;
     document.getElementById('enemies-killed').textContent = `Bajas: ${kills}`;
+
+    // Actualizar textos de UI
+    document.getElementById('gold-earned').textContent = `Oro Juntado: +${game.sessionGold}`;
+    document.getElementById('gold-total').textContent = `Oro Total: ${player.totalGold}`;
+
+    // Reiniciar oro de sesión para la siguiente partida
+    game.sessionGold = 0;
+    updateGoldHUD();
+    renderLastSessionGold();
 }
 
 function renderStatsTable() {
@@ -361,6 +409,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Cargar estadísticas iniciales
     renderStatsTable();
+    renderLastSessionGold();
+    updateGoldHUD();
 });
 
 let faseSeleccion = "ofensiva"; // Puede ser "ofensiva" o "defensiva"

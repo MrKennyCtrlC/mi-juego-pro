@@ -1,5 +1,9 @@
+// --- INICIALIZACIÓN GLOBAL DE MONEDAS ---
+const game = { sessionGold: 0 };
+
 // --- GAME ENTITIES POOLS ---
 const player = {
+    totalGold: parseInt(localStorage.getItem("game_total_gold")) || 0,
     x: 0,
     y: 0,
     width: 26,

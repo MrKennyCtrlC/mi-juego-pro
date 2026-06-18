@@ -47,7 +47,7 @@ const particles = Array.from({ length: maxParticles }, () => ({
 
 window.damagePopups = [];
 
-window.spawnDamagePopup = function(x, y, text, color = '#ff4444') {
+window.spawnDamagePopup = function (x, y, text, color = '#ff4444') {
     window.damagePopups.push({
         x: x,
         y: y - 10,    // Mundo: ligeramente arriba del impacto
@@ -60,7 +60,7 @@ window.spawnDamagePopup = function(x, y, text, color = '#ff4444') {
 
 // updateAndRenderDamagePopups se llama desde el pipeline de render de index.html
 // con coordenadas de pantalla ya convertidas.
-window.updateAndRenderDamagePopups = function(ctx, dt, scaleX, scaleY, halfW, halfH, camX, camY) {
+window.updateAndRenderDamagePopups = function (ctx, dt, scaleX, scaleY, halfW, halfH, camX, camY) {
     for (let i = window.damagePopups.length - 1; i >= 0; i--) {
         const p = window.damagePopups[i];
         p.y += p.vy * dt;    // Sube en espacio-mundo
@@ -96,13 +96,13 @@ let _timerFuegoFatuo = 0;
 let _timerEstatica = 0;
 
 // Resetear timers al iniciar nueva partida
-window._resetRelicTimers = function() {
+window._resetRelicTimers = function () {
     _timerFuegoFatuo = 0;
     _timerEstatica = 0;
     window.damagePopups = [];
 };
 
-window.actualizarReliquiasPasivas = function(dt) {
+window.actualizarReliquiasPasivas = function (dt) {
     if (typeof isPaused !== 'undefined' && isPaused) return;
     if (!player || !player.reliquias) return;
 
@@ -480,9 +480,9 @@ function checkProjectileCollisions(dt) {
                         isBossFightActive = false;
                         if (typeof SoundManager !== 'undefined') SoundManager.playBGM('gameplay');
                         if (typeof kills !== 'undefined') kills += 100; // Bono de bajas
-                        
+
                         // Drop original de XP
-                        if (typeof spawnGem === 'function') spawnGem(boss.x, boss.y, 500); 
+                        if (typeof spawnGem === 'function') spawnGem(boss.x, boss.y, 500);
 
                         // --- NUEVO: RECOMPENSA DE VICTORIA (DROPS DE CORAZONES) ---
                         if (typeof spawnHeart === 'function') {
@@ -590,6 +590,7 @@ function updateGems(dt) {
                 if (dist < 15) {
                     g.active = false;
                     gainXp(g.xpValue);
+                    game.sessionGold += g.xpValue;
                 }
             } else if (dist < player.magnetRadius) {
                 g.magnetizing = true;

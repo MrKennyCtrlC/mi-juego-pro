@@ -23,6 +23,7 @@
     <div class="hud-top">
       <div class="hud-stats">
         <span id="level-display">LV 1</span>
+        <span id="gold-display" style="color: #ffd700; text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);">🟡 0</span>
         <span id="fps-display">FPS: 60</span>
         <span id="enemy-display">Enemigos: 0</span>
       </div>
@@ -66,6 +67,7 @@
       </div>
 
       <button id="start-game-btn">⚡ INICIAR PARTIDA</button>
+      <p id="last-session-gold" class="hidden" style="font-size: 1.1rem; color: #ffd700; text-align: center; margin-top: -15px; font-weight: 600; text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);"></p>
 
       <!-- Volume Controls -->
       <div class="menu-panel">
@@ -145,7 +147,9 @@
       <h1 class="dead-text">HAS SIDO DESTRUIDO</h1>
       <p id="survival-time" style="font-size: 1.25rem; font-weight: 600; color: #ffffff; margin-bottom: 10px;">
         Sobrevivido: 00:00</p>
-      <p id="enemies-killed" style="font-size: 1.1rem; color: rgba(255,255,255,0.7); margin-bottom: 30px;">Bajas: 0</p>
+      <p id="enemies-killed" style="font-size: 1.1rem; color: rgba(255,255,255,0.7); margin-bottom: 10px;">Bajas: 0</p>
+      <p id="gold-earned" style="font-size: 1.1rem; color: #ffd700; margin-bottom: 10px;">Oro Juntado: +0</p>
+      <p id="gold-total" style="font-size: 1.1rem; color: #ffd700; margin-bottom: 30px;">Oro Total: 0</p>
       <button id="restart-btn" class="pixel-btn">REINTENTAR</button>
     </div>
   </div>
@@ -564,6 +568,8 @@
 
       // Reiniciar contadores del juego
       kills = 0;
+      game.sessionGold = 0;
+      updateGoldHUD();
       gameTime = 0;
       stageTimer = 0;
       enemySpawnTimer = 0;
