@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Mage Survivors </title>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
 
 </head>
@@ -23,7 +23,7 @@
     <div class="hud-top">
       <div class="hud-stats">
         <span id="level-display">LV 1</span>
-        <span id="gold-display" style="color: #ffd700; text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);">🟡 0</span>
+        <span id="gold-display" style="color: #ffd700;">🪙 0</span>
         <span id="fps-display">FPS: 60</span>
         <span id="enemy-display">Enemigos: 0</span>
       </div>
@@ -62,13 +62,13 @@
     <div class="main-menu-inner">
 
       <div class="game-logo">
-        <h1>NEON SURVIVORS</h1>
-        <p class="subtitle">WebGL 2 Extreme Performance</p>
+        <h1>MAGE SURVIVORS</h1>
+        <p class="subtitle">Crónicas de la Mazmorra Eterna</p>
       </div>
 
-      <button id="start-game-btn">⚡ INICIAR PARTIDA</button>
+      <button id="start-game-btn">⚔️ INICIAR PARTIDA</button>
       <p id="last-session-gold" class="hidden"
-        style="font-size: 1.1rem; color: #ffd700; text-align: center; margin-top: -15px; font-weight: 600; text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);">
+        style="font-size: 1.1rem; color: #ffd700; text-align: center; margin-top: -15px; font-weight: 600;">
       </p>
 
       <!-- Volume Controls -->
@@ -138,28 +138,28 @@
 
   <div id="start-screen" class="screen hidden">
     <div class="menu-content">
-      <h1>NEON SURVIVORS</h1>
-      <p>WebGL 2 Extreme Performance Stress-Test</p>
-      <button id="start-btn" class="pixel-btn">INICIAR SUPERVIVENCIA</button>
+      <h1>MAGE SURVIVORS</h1>
+      <p>Crónicas de la Mazmorra Eterna</p>
+      <button id="start-btn" class="pixel-btn">⚔️ INICIAR SUPERVIVENCIA</button>
     </div>
   </div>
 
   <div id="game-over-screen" class="screen hidden">
     <div class="menu-content">
-      <h1 class="dead-text">HAS SIDO DESTRUIDO</h1>
-      <p id="survival-time" style="font-size: 1.25rem; font-weight: 600; color: #ffffff; margin-bottom: 10px;">
+      <h1 class="dead-text">¡HAS CAÍDO EN BATALLA!</h1>
+      <p id="survival-time" style="font-size: 1.25rem; font-weight: 600; color: #f4eae1; margin-bottom: 10px;">
         Sobrevivido: 00:00</p>
-      <p id="enemies-killed" style="font-size: 1.1rem; color: rgba(255,255,255,0.7); margin-bottom: 10px;">Bajas: 0</p>
-      <p id="gold-earned" style="font-size: 1.1rem; color: #ffd700; margin-bottom: 10px;">Oro Juntado: +0</p>
-      <p id="gold-total" style="font-size: 1.1rem; color: #ffd700; margin-bottom: 30px;">Oro Total: 0</p>
+      <p id="enemies-killed" style="font-size: 1.1rem; color: rgba(244,234,225,0.7); margin-bottom: 10px;">Bajas: 0</p>
+      <p id="gold-earned" style="font-size: 1.1rem; color: #ffd700; margin-bottom: 10px;">Oro Ganado: +0</p>
+      <p id="gold-total" style="font-size: 1.1rem; color: #ffd700; margin-bottom: 30px;">Tesoro Total: 0</p>
       <button id="restart-btn" class="pixel-btn">REINTENTAR</button>
     </div>
   </div>
 
   <div id="relic-selection-screen" class="modal-overlay hidden">
     <div class="modal-content">
-      <h2 id="relic-title">ELIGE TU RELIQUIA OFENSIVA</h2>
-      <p class="subtitle">Define tu estilo de juego para esta partida</p>
+      <h2 id="relic-title">ELIGE UNA RELIQUIA OFENSIVA</h2>
+      <p class="subtitle">Forja tu destino antes de entrar a la mazmorra</p>
       <div id="relic-options-container" class="relic-grid">
       </div>
     </div>
