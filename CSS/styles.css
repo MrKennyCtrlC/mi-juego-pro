@@ -921,3 +921,191 @@ h1 {
   filter: drop-shadow(2px 3px 10px rgba(212, 175, 55, 0.6));
   transform: scale(1.1) rotate(3deg);
 }
+
+/* =====================================================
+   TIENDA DE MEJORAS PERMANENTES (Meta-progresión)
+   ===================================================== */
+#shop-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(6, 3, 1, 0.95);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 200;
+}
+
+.shop-inner {
+  width: 92%;
+  max-width: 520px;
+  background: rgba(28, 16, 8, 0.98);
+  border: 4px double var(--border-gold);
+  border-radius: 6px;
+  padding: 36px 32px;
+  box-shadow: var(--shadow-heavy), inset 0 0 40px rgba(0,0,0,0.55);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.shop-title {
+  font-family: var(--font-title);
+  font-size: 1.9rem;
+  color: var(--text-gold);
+  letter-spacing: 4px;
+  text-align: center;
+  text-shadow: 2px 3px 8px rgba(0,0,0,0.95);
+  margin: 0;
+}
+
+.shop-gold-display {
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  color: var(--text-gold);
+  background: rgba(44, 27, 16, 0.7);
+  border: 2px solid var(--border-stone);
+  border-radius: 4px;
+  padding: 8px 16px;
+}
+
+.shop-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-bronze), transparent);
+  border: none;
+  margin: 0;
+}
+
+.shop-card {
+  background: rgba(44, 27, 16, 0.9);
+  border: 3px double var(--border-bronze);
+  border-radius: 4px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.6);
+  transition: border-color 0.2s ease;
+}
+
+.shop-card:hover {
+  border-color: var(--border-gold);
+}
+
+.shop-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.shop-card-name {
+  font-family: var(--font-title);
+  font-size: 1.05rem;
+  color: var(--text-gold);
+  letter-spacing: 1px;
+}
+
+.shop-card-level {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.shop-card-desc {
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  font-style: italic;
+  margin: 0;
+}
+
+.shop-buy-btn {
+  font-family: var(--font-title);
+  align-self: flex-end;
+  padding: 9px 22px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: linear-gradient(180deg, #7a5a10 0%, #4a3508 100%);
+  color: var(--text-gold);
+  border: 2px solid var(--border-gold);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.6);
+}
+
+.shop-buy-btn:hover:not(:disabled) {
+  background: linear-gradient(180deg, #9a7215 0%, #5e4510 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 5px 18px rgba(0,0,0,0.8);
+}
+
+.shop-buy-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.shop-buy-btn.is-maxed {
+  background: linear-gradient(180deg, #3a2a0a 0%, #221808 100%);
+  color: var(--border-bronze);
+  border-color: var(--border-stone);
+  letter-spacing: 2px;
+}
+
+.shop-buy-btn.no-gold {
+  background: linear-gradient(180deg, #3a1010 0%, #221010 100%);
+  color: #a06060;
+  border-color: #5c3030;
+}
+
+.shop-back-btn {
+  font-family: var(--font-title);
+  width: 100%;
+  padding: 13px;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  cursor: pointer;
+  background: rgba(44, 27, 16, 0.6);
+  color: var(--text-muted);
+  border: 2px solid var(--border-stone);
+  transition: all 0.2s ease;
+}
+
+.shop-back-btn:hover {
+  background: rgba(44, 27, 16, 0.95);
+  border-color: var(--border-bronze);
+  color: var(--text-ivory);
+  transform: translateY(-1px);
+}
+
+/* Botón de acceso en el menú principal */
+#open-shop-btn {
+  background: linear-gradient(180deg, #5a4208 0%, #342408 100%);
+  color: #d4c060;
+  border: 3px double var(--border-bronze);
+  padding: 14px 48px;
+  font-size: 1rem;
+  font-weight: 800;
+  font-family: var(--font-title);
+  border-radius: 4px;
+  cursor: pointer;
+  letter-spacing: 2px;
+  box-shadow: var(--shadow-heavy);
+  transition: all 0.25s ease;
+  width: 100%;
+  max-width: 360px;
+}
+
+#open-shop-btn:hover {
+  background: linear-gradient(180deg, #7a5a10 0%, #4a3508 100%);
+  border-color: var(--border-gold);
+  color: var(--text-gold);
+  transform: translateY(-2px);
+}

@@ -67,6 +67,7 @@
       </div>
 
       <button id="start-game-btn">⚔️ INICIAR PARTIDA</button>
+      <button id="open-shop-btn">🏛️ TIENDA DE MEJORAS</button>
       <p id="last-session-gold" class="hidden"
         style="font-size: 1.1rem; color: #ffd700; text-align: center; margin-top: -15px; font-weight: 600;">
       </p>
@@ -162,6 +163,20 @@
       <p class="subtitle">Forja tu destino antes de entrar a la mazmorra</p>
       <div id="relic-options-container" class="relic-grid">
       </div>
+    </div>
+  </div>
+
+  <!-- ================================================
+       TIENDA DE MEJORAS PERMANENTES
+  ================================================= -->
+  <div id="shop-overlay" class="hidden">
+    <div class="shop-inner">
+      <h2 class="shop-title">🏛️ TIENDA DE MEJORAS</h2>
+      <p class="shop-gold-display" id="shop-gold-text">🪙 Tesoro: 0 oro</p>
+      <hr class="shop-divider">
+      <div id="shop-cards-container"></div>
+      <hr class="shop-divider">
+      <button class="shop-back-btn" id="shop-back-btn">↩ VOLVER AL MENÚ</button>
     </div>
   </div>
 
@@ -553,7 +568,6 @@
       // Restaurar estadísticas iniciales del jugador
       player.x = 0;
       player.y = 0;
-      player.hp = player.maxHp = 100;
       player.xp = 0;
       player.maxXp = 10;
       player.level = 1;
@@ -563,10 +577,17 @@
       player.speedMultiplier = 1.0;
       player.magnetRadius = 90;
       player.projectileSize = 7;
-      player.projectileDamage = 20;
       player.projectileCount = 1;
       player.regenRate = 0;
       player.attackTimer = 0;
+
+      // --- Aplicar bonuses de mejoras permanentes ---
+      const _pu = window.permanentUpgrades;
+      const _baseMaxHp = 100;
+      const _baseDmg  = 20;
+      player.maxHp           = _baseMaxHp + (_pu.hp_inicial.nivel   * _pu.hp_inicial.beneficioPorNivel);
+      player.hp              = player.maxHp;
+      player.projectileDamage = _baseDmg  * (1 + (_pu.dano_global.nivel * _pu.dano_global.beneficioPorNivel));
 
       // Reiniciar contadores del juego
       kills = 0;
@@ -615,11 +636,11 @@
       document.getElementById('xp-bar').style.width = '0%';
       document.getElementById('level-display').textContent = `LV 1`;
       document.getElementById('hp-bar').style.width = '100%';
-      document.getElementById('hp-text').textContent = '100 / 100';
+      document.getElementById('hp-text').textContent = `${player.maxHp} / ${player.maxHp}`;
 
       gameState = 'playing';
       lastTime = 0;
-      showToast("⚔️ ¡SOBREVIVE A LA HORDA NEÓN! ⚔️");
+      showToast("⚔️ ¡QUE LAS SOMBRAS TIEMBLEN ANTE TI! ⚔️");
     }
 
     // --- GAME ENGINE LOOP ---

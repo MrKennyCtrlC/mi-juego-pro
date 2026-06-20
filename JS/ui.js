@@ -1,4 +1,46 @@
 // ==========================================
+// MEJORAS PERMANENTES (META-PROGRESIÓN)
+// ==========================================
+
+/**
+ * Diccionario de mejoras permanentes con su estado actual.
+ * Se persiste en localStorage bajo "game_permanent_upgrades".
+ * `window.permanentUpgrades` lo expone para que startGame() pueda leerlo.
+ */
+window.permanentUpgrades = (() => {
+    const DEFAULTS = {
+        dano_global: {
+            nombre: '\ud83d\udca5 Da\u00f1o Global',
+            nivel: 0,
+            maxNivel: 5,
+            costoBase: 100,
+            multiplicadorCosto: 1.5,
+            beneficioPorNivel: 0.05   // +5% da\u00f1o por nivel
+        },
+        hp_inicial: {
+            nombre: '\u2764\ufe0f Vida Inicial',
+            nivel: 0,
+            maxNivel: 5,
+            costoBase: 150,
+            multiplicadorCosto: 1.4,
+            beneficioPorNivel: 10     // +10 HP por nivel
+        }
+    };
+
+    try {
+        const saved = JSON.parse(localStorage.getItem('game_permanent_upgrades'));
+        if (saved) {
+            // Fusionar niveles guardados sobre los defaults (seguro ante claves nuevas)
+            Object.keys(DEFAULTS).forEach(k => {
+                if (saved[k] !== undefined) DEFAULTS[k].nivel = saved[k].nivel || 0;
+            });
+        }
+    } catch (_) { /* primera vez o JSON corrupto: usar defaults */ }
+
+    return DEFAULTS;
+})();
+
+// ==========================================
 // SISTEMA DE INTERFAZ DE USUARIO (UI)
 // ==========================================
 
@@ -454,7 +496,142 @@ document.addEventListener('DOMContentLoaded', () => {
     renderStatsTable();
     renderLastSessionGold();
     updateGoldHUD();
+
+    // --- Tienda de Mejoras ---
+    document.getElementById('open-shop-btn').addEventListener('click', openShop);
+    document.getElementById('shop-back-btn').addEventListener('click', closeShop);
 });
+
+// ==========================================
+// TIENDA DE MEJORAS PERMANENTES
+// ==========================================
+
+/**
+ * Calcula el costo actual de una mejora seg\u00fan su nivel.
+ */
+function calcShopCost(upg) {
+    return Math.floor(upg.costoBase * Math.pow(upg.multiplicadorCosto, upg.nivel));
+}
+
+/**
+ * Persiste el estado de mejoras permanentes y el oro del jugador en localStorage.
+ */
+function saveShopState() {
+    const snapshot = {};
+    Object.keys(window.permanentUpgrades).forEach(k => {
+        snapshot[k] = { nivel: window.permanentUpgrades[k].nivel };
+    });
+    localStorage.setItem('game_permanent_upgrades', JSON.stringify(snapshot));
+    localStorage.setItem('game_total_gold', player.totalGold);
+}
+
+/**
+ * Renderiza las tarjetas de mejora dentro del panel de la tienda.
+ * Se llama al abrir la tienda y tras cada compra.
+ */
+function renderShopCards() {
+    const container = document.getElementById('shop-cards-container');
+    const goldText  = document.getElementById('shop-gold-text');
+    goldText.textContent = `\ud83e\ude99 Tesoro disponible: ${player.totalGold} oro`;
+
+    container.innerHTML = Object.entries(window.permanentUpgrades).map(([id, upg]) => {
+        const isMax    = upg.nivel >= upg.maxNivel;
+        const costo    = isMax ? '\u2014' : calcShopCost(upg);
+        const canAfford = !isMax && player.totalGold >= calcShopCost(upg);
+
+        // Descripci\u00f3n del beneficio actual acumulado
+        let bonusDesc;
+        if (id === 'dano_global') {
+            const pct = (upg.nivel * upg.beneficioPorNivel * 100).toFixed(0);
+            bonusDesc = upg.nivel === 0
+                ? 'Sin mejoras a\u00fan'
+                : `Da\u00f1o +${pct}% acumulado`;
+        } else {
+            const hp = upg.nivel * upg.beneficioPorNivel;
+            bonusDesc = upg.nivel === 0
+                ? 'Sin mejoras a\u00fan'
+                : `+${hp} HP m\u00e1x acumulados`;
+        }
+
+        let btnClass = 'shop-buy-btn';
+        let btnText;
+        let btnDisabled;
+        if (isMax) {
+            btnClass += ' is-maxed';
+            btnText   = 'M\u00c1XIMO';
+            btnDisabled = 'disabled';
+        } else if (!canAfford) {
+            btnClass += ' no-gold';
+            btnText   = `Comprar (${costo} \ud83e\ude99)`;
+            btnDisabled = 'disabled';
+        } else {
+            btnText   = `Comprar (${costo} \ud83e\ude99)`;
+            btnDisabled = '';
+        }
+
+        return `
+        <div class="shop-card">
+            <div class="shop-card-header">
+                <span class="shop-card-name">${upg.nombre}</span>
+                <span class="shop-card-level">Nivel ${upg.nivel} / ${upg.maxNivel}</span>
+            </div>
+            <p class="shop-card-desc">
+                ${bonusDesc}<br>
+                <em>Pr\u00f3xima mejora: +${id === 'dano_global'
+                    ? (upg.beneficioPorNivel * 100) + '% da\u00f1o'
+                    : upg.beneficioPorNivel + ' HP m\u00e1x'
+                }</em>
+            </p>
+            <button class="${btnClass}" ${btnDisabled}
+                    onclick="purchaseUpgrade('${id}')">${btnText}</button>
+        </div>`;
+    }).join('');
+}
+
+/**
+ * Intenta comprar una mejora permanente.
+ * Valida oro, actualiza estado, persiste y refresca la UI.
+ */
+function purchaseUpgrade(id) {
+    const upg  = window.permanentUpgrades[id];
+    if (!upg || upg.nivel >= upg.maxNivel) return;
+
+    const costo = calcShopCost(upg);
+    if (player.totalGold < costo) {
+        showToast('\ud83e\ude99 \u00a1Oro insuficiente!');
+        return;
+    }
+
+    // Transacci\u00f3n
+    player.totalGold -= costo;
+    upg.nivel++;
+
+    // Persistencia inmediata
+    saveShopState();
+    updateGoldHUD();
+    renderShopCards();
+
+    showToast(`\u2728 \u00a1${upg.nombre} mejorado a Nivel ${upg.nivel}!`);
+}
+
+/**
+ * Abre el panel de la tienda y oculta el men\u00fa principal.
+ */
+function openShop() {
+    document.getElementById('main-menu').classList.add('hidden');
+    document.getElementById('shop-overlay').classList.remove('hidden');
+    renderShopCards();
+}
+
+/**
+ * Cierra la tienda y vuelve al men\u00fa principal.
+ */
+function closeShop() {
+    document.getElementById('shop-overlay').classList.add('hidden');
+    document.getElementById('main-menu').classList.remove('hidden');
+    renderStatsTable();
+    renderLastSessionGold();
+}
 
 let faseSeleccion = "ofensiva"; // Puede ser "ofensiva" o "defensiva"
 
